@@ -12,10 +12,6 @@
     "type": "git",
     "url": "git+https://github.com/noemihv/bluecar.git"
   },
-  "keywords": [
-    "WordPress",
-    "bluecar",
-  ],
   "author": "Noemí Hernández",
   "devDependencies": {
     "browser-sync": "^2.18.8",
