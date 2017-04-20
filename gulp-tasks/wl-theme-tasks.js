@@ -17,7 +17,7 @@ var uglify = require('gulp-uglifycss');
 gulp.task('wl-theme-sass-dev', function () {
     
     //transpile style.scss to css
-    gulp.src('./wp-content/themes/bones4/library/scss/style.scss')
+    gulp.src('./wp-content/themes/bones3/library/scss/style.scss')
         .pipe(sass())
         .pipe(gulp.dest('./wp-content/themes/bones3/library/css')) //write in prod folder
         .pipe(browserSync.stream()); //sync with browserSync
