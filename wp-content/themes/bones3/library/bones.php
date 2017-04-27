@@ -156,6 +156,17 @@ function bones_scripts_and_styles() {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'bones-js' );
 
+		// materialize design
+		wp_register_style( 'materializecss', '//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css' );
+		wp_register_script( 'materializejs', '//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js', array( 'jquery' ), '', true );
+		wp_enqueue_style( 'materializecss' );
+		wp_enqueue_script( 'materializejs' );
+
+		// azulcaribe material design specifics
+		wp_register_script( 'azulcaribe-material-js', get_stylesheet_directory_uri() . '/library/js/azulcaribe-materialize.js', array( 'jquery' ), '', true );
+		wp_enqueue_script( 'azulcaribe-material-js' );
+
+
 	}
 }
 

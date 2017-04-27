@@ -42,14 +42,14 @@
 
 	<body <?php body_class(); ?> itemscope itemtype="http://schema.org/WebPage">
 
-		<div id="container">
+		<div id="container" style="background-color: white;">
 
-			<header class="header" role="banner" itemscope itemtype="http://schema.org/WPHeader">
+			<header class="header" style="background-color: white;" role="banner" itemscope itemtype="http://schema.org/WPHeader">
 
 				<div id="inner-header" class="wrap cf">
 
 					<?php // to use a image just replace the bloginfo('name') with your img src and remove the surrounding <p> ?>
-					<p id="logo" class="h1" itemscope itemtype="http://schema.org/Organization"><a href="<?php echo home_url(); ?>" rel="nofollow"><?php bloginfo('library/images/azulcaribe.jpg'); ?></a></p>
+					<p id="logo" class="h1" style="text-align: center; height: 60px;" itemscope itemtype="http://schema.org/Organization"><a href="<?php echo home_url(); ?>" rel="nofollow"><img  style="height: 80px;" src="<?php echo esc_html( get_stylesheet_directory_uri() . '/library/images/azulcaribe.jpg' ); ?>" alt=""></a></p>
 
 					<?php // if you'd like to use the site description you can un-comment it below ?>
 					<?php // bloginfo('description'); ?>
