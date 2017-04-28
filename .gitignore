@@ -3,3 +3,7 @@ node_modules/
 npm-debug.log
 /wp-content/themes/bones3/library/css
 /wp-content/debug.log
+/vendor
+/wpcs
+composer.json
+composer.lock
