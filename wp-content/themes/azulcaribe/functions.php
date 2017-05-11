@@ -16,21 +16,21 @@ function azulcaribe_init() {
 }
 add_action( 'after_setup_theme', 'azulcaribe_init' );
 
-function azulcaribe_custom_post_type()
+function azulcaribe_bikini()
 {
-    register_post_type('azulcaribe_productos',
+    register_post_type('azulcaribe_bikini',
                        [
                            'labels'      => [
-                               'name'          => __('Productos'),
-                               'singular_name' => __('Producto'),
-                               'search_items'      => __( 'Buscar producto', 'textdomain' ),
-		                       'all_items'         => __( 'Todos los productos', 'textdomain' ),
+                               'name'          => __('Bikinis'),
+                               'singular_name' => __('Bikini'),
+                               'search_items'      => __( 'Buscar bikini', 'textdomain' ),
+		                       'all_items'         => __( 'Todos los bikinis', 'textdomain' ),
 		                       'parent_item'       => __( 'Parent product', 'textdomain' ),
 		                       'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
-		                       'edit_item'         => __( 'Editar producto', 'textdomain' ),
+		                       'edit_item'         => __( 'Editar bikini', 'textdomain' ),
 		                       'update_item'       => __( 'Actualizar Bikini', 'textdomain' ),
-		                       'add_new_item'      => __( 'Add New Bikini', 'textdomain' ),
-		                       'new_item_name'     => __( 'New Bikini Name', 'textdomain' ),
+		                       'add_new_item'      => __( 'Agregar nuevo Bikini', 'textdomain' ),
+		                       'new_item_name'     => __( 'Nuevo nombre de bikini', 'textdomain' ),
 		                       'menu_name'         => __( 'Bikini', 'textdomain' ),
                            ],
                            'public'      => true,
@@ -39,33 +39,156 @@ function azulcaribe_custom_post_type()
                        ]
     );
 }
-add_action('init', 'azulcaribe_custom_post_type');
+add_action('init', 'azulcaribe_bikini');
 
-function create_products_taxonomies() {
-  $labels = array(
-		'name'              => _x( 'Bikinis', 'taxonomy general name', 'textdomain' ),
-		'singular_name'     => _x( 'Bikini', 'taxonomy singular name', 'textdomain' ),
-		'search_items'      => __( 'Search Bikini', 'textdomain' ),
-		'all_items'         => __( 'All Bikinis', 'textdomain' ),
-		'parent_item'       => __( 'Parent Bikini', 'textdomain' ),
-		'parent_item_colon' => __( 'Parent Bikini:', 'textdomain' ),
-		'edit_item'         => __( 'Edit Bikini', 'textdomain' ),
-		'update_item'       => __( 'Update Bikini', 'textdomain' ),
-		'add_new_item'      => __( 'Add New Bikini', 'textdomain' ),
-		'new_item_name'     => __( 'New Bikini Name', 'textdomain' ),
-		'menu_name'         => __( 'Bikini', 'textdomain' ),
-	);
 
-	$args = array(
-		'hierarchical'      => true,
-		'labels'            => $labels,
-		'show_ui'           => true,
-		'show_admin_column' => true,
-		'query_var'         => true,
-		'rewrite'           => array( 'slug' => 'bikini' ),
-	);
-
-  register_taxonomy( 'Bikini', 'azulcaribe_productos', $args );
+function azulcaribe_lentes()
+{
+    register_post_type('azulcaribe_lentes',
+                       [
+                           'labels'      => [
+                               'name'          => __('Lentes'),
+                               'singular_name' => __('Lentes'),
+                               'search_items'      => __( 'Buscar lentes', 'textdomain' ),
+		                       'all_items'         => __( 'Todos los lentes', 'textdomain' ),
+		                       'parent_item'       => __( 'Parent product', 'textdomain' ),
+		                       'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
+		                       'edit_item'         => __( 'Editar lentes', 'textdomain' ),
+		                       'update_item'       => __( 'Actualizar lentes', 'textdomain' ),
+		                       'add_new_item'      => __( 'Agregar nuevos lentes', 'textdomain' ),
+		                       'new_item_name'     => __( 'Nuevo nombre de lentes', 'textdomain' ),
+		                       'menu_name'         => __( 'Lentes', 'textdomain' ),
+                           ],
+                           'public'      => true,
+                           'has_archive' => true,
+                           'menu_position' => 5,
+                       ]
+    );
 }
+add_action('init', 'azulcaribe_lentes');
 
-add_action( 'init', 'create_products_taxonomies', 0 );
+function azulcaribe_inflable()
+{
+    register_post_type('azulcaribe_inflable',
+                       [
+                           'labels'      => [
+                               'name'          => __('Inflables'),
+                               'singular_name' => __('Infable'),
+                               'search_items'      => __( 'Buscar inflables', 'textdomain' ),
+		                       'all_items'         => __( 'Todos los inflables', 'textdomain' ),
+		                       'parent_item'       => __( 'Parent product', 'textdomain' ),
+		                       'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
+		                       'edit_item'         => __( 'Editar inflable', 'textdomain' ),
+		                       'update_item'       => __( 'Actualizar inflable', 'textdomain' ),
+		                       'add_new_item'      => __( 'Agregar nuevo inflable', 'textdomain' ),
+		                       'new_item_name'     => __( 'Nuevo nombre de inflable', 'textdomain' ),
+		                       'menu_name'         => __( 'Inflables', 'textdomain' ),
+                           ],
+                           'public'      => true,
+                           'has_archive' => true,
+                           'menu_position' => 5,
+                       ]
+    );
+}
+add_action('init', 'azulcaribe_inflable');
+
+function azulcaribe_mantita()
+{
+    register_post_type('azulcaribe_mantita',
+                       [
+                           'labels'      => [
+                               'name'          => __('Mantas de playa'),
+                               'singular_name' => __('Manta de playa'),
+                               'search_items'      => __( 'Buscar mantas de playa', 'textdomain' ),
+		                       'all_items'         => __( 'Todas las mantas de playa', 'textdomain' ),
+		                       'parent_item'       => __( 'Parent product', 'textdomain' ),
+		                       'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
+		                       'edit_item'         => __( 'Editar manta de playa', 'textdomain' ),
+		                       'update_item'       => __( 'Actualizar manta de playa', 'textdomain' ),
+		                       'add_new_item'      => __( 'Agregar nuevas manta de playa', 'textdomain' ),
+		                       'new_item_name'     => __( 'Nuevo nombre de manta de playa', 'textdomain' ),
+		                       'menu_name'         => __( 'Mantas de playa', 'textdomain' ),
+                           ],
+                           'public'      => true,
+                           'has_archive' => true,
+                           'menu_position' => 5,
+                       ]
+    );
+}
+add_action('init', 'azulcaribe_mantita');
+
+function azulcaribe_sombrero()
+{
+    register_post_type('azulcaribe_sombrero',
+                       [
+                           'labels'      => [
+                               'name'          => __('Sombreros'),
+                               'singular_name' => __('Sombrero'),
+                               'search_items'      => __( 'Buscar sombreros', 'textdomain' ),
+		                       'all_items'         => __( 'Todos los sombreros', 'textdomain' ),
+		                       'parent_item'       => __( 'Parent product', 'textdomain' ),
+		                       'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
+		                       'edit_item'         => __( 'Editar sombrero', 'textdomain' ),
+		                       'update_item'       => __( 'Actualizar sombrero', 'textdomain' ),
+		                       'add_new_item'      => __( 'Agregar sombrero', 'textdomain' ),
+		                       'new_item_name'     => __( 'Nuevo nombre de sombrero', 'textdomain' ),
+		                       'menu_name'         => __( 'Sombreros', 'textdomain' ),
+                           ],
+                           'public'      => true,
+                           'has_archive' => true,
+                           'menu_position' => 5,
+                       ]
+    );
+}
+add_action('init', 'azulcaribe_sombrero');
+
+function azulcaribe_bolsas()
+{
+    register_post_type('azulcaribe_bolsas',
+                       [
+                           'labels'      => [
+                               'name'          => __('Bolsas de playa'),
+                               'singular_name' => __('Bolsa de playa'),
+                               'search_items'      => __( 'Buscar bolsas de playa', 'textdomain' ),
+		                       'all_items'         => __( 'Todas las bolsas de playa', 'textdomain' ),
+		                       'parent_item'       => __( 'Parent product', 'textdomain' ),
+		                       'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
+		                       'edit_item'         => __( 'Editar bolsa de playa', 'textdomain' ),
+		                       'update_item'       => __( 'Actualizar bolsa de playa', 'textdomain' ),
+		                       'add_new_item'      => __( 'Agregar bolsa de playa', 'textdomain' ),
+		                       'new_item_name'     => __( 'Nuevo nombre de bolsa de playa', 'textdomain' ),
+		                       'menu_name'         => __( 'Bolsas de playa', 'textdomain' ),
+                           ],
+                           'public'      => true,
+                           'has_archive' => true,
+                           'menu_position' => 5,
+                       ]
+    );
+}
+add_action('init', 'azulcaribe_bolsas');
+
+function azulcaribe_accesorio()
+{
+    register_post_type('azulcaribe_accesorio',
+                       [
+                           'labels'      => [
+                               'name'          => __('Accesorios'),
+                               'singular_name' => __('Accesorio'),
+                               'search_items'      => __( 'Buscar accesorios', 'textdomain' ),
+		                       'all_items'         => __( 'Todos los accesorios', 'textdomain' ),
+		                       'parent_item'       => __( 'Parent product', 'textdomain' ),
+		                       'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
+		                       'edit_item'         => __( 'Editar accesorio', 'textdomain' ),
+		                       'update_item'       => __( 'Actualizar accesorio', 'textdomain' ),
+		                       'add_new_item'      => __( 'Agregar accesorio', 'textdomain' ),
+		                       'new_item_name'     => __( 'Nuevo nombre de accesorio', 'textdomain' ),
+		                       'menu_name'         => __( 'Accesorios', 'textdomain' ),
+                           ],
+                           'public'      => true,
+                           'has_archive' => true,
+                           'menu_position' => 5,
+                       ]
+    );
+}
+add_action('init', 'azulcaribe_accesorio');
+
