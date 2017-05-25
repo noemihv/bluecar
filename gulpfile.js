@@ -38,7 +38,9 @@ gulp.task('php-dev-watch', function () {
 });
 
 //dev tasks
-gulp.task('dev', ['wl-theme-sass-dev', 'wl-theme-sass-watch', 'browser-sync', 'php-dev-watch']);
+//gulp.task('dev', ['wl-theme-sass-dev', 'wl-theme-sass-watch', 'browser-sync', 'php-dev-watch']);
+gulp.task('dev', ['azulcaribe-theme-sass-dev', 'azulcaribe-theme-sass-watch', 'browser-sync', 'php-dev-watch']);
 
 //production tasks
-gulp.task('default', ['wl-theme-sass']);
+//gulp.task('default', ['wl-theme-sass']);
+gulp.task('default', ['azulcaribe-theme-sass']);
