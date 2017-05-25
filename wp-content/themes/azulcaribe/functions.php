@@ -18,7 +18,7 @@ add_action( 'after_setup_theme', 'azulcaribe_init' );
 
 function azulcaribe_bikini()
 {
-    register_post_type('azulcaribe_bikini',
+    register_post_type('bikini',
                        [
                            'labels'      => [
                                'name'          => __('Bikinis'),
@@ -36,6 +36,7 @@ function azulcaribe_bikini()
                            'public'      => true,
                            'has_archive' => true,
                            'menu_position' => 5,
+                           'rewrite' => array( 'slug' => 'bikini' ),
                        ]
     );
 }
@@ -44,7 +45,7 @@ add_action('init', 'azulcaribe_bikini');
 
 function azulcaribe_lentes()
 {
-    register_post_type('azulcaribe_lentes',
+    register_post_type('lentes',
                        [
                            'labels'      => [
                                'name'          => __('Lentes'),
@@ -58,6 +59,7 @@ function azulcaribe_lentes()
 		                       'add_new_item'      => __( 'Agregar nuevos lentes', 'textdomain' ),
 		                       'new_item_name'     => __( 'Nuevo nombre de lentes', 'textdomain' ),
 		                       'menu_name'         => __( 'Lentes', 'textdomain' ),
+                               'rewrite' => array( 'slug' => 'lentes' ),
                            ],
                            'public'      => true,
                            'has_archive' => true,
@@ -69,7 +71,7 @@ add_action('init', 'azulcaribe_lentes');
 
 function azulcaribe_inflable()
 {
-    register_post_type('azulcaribe_inflable',
+    register_post_type('inflable',
                        [
                            'labels'      => [
                                'name'          => __('Inflables'),
@@ -83,6 +85,7 @@ function azulcaribe_inflable()
 		                       'add_new_item'      => __( 'Agregar nuevo inflable', 'textdomain' ),
 		                       'new_item_name'     => __( 'Nuevo nombre de inflable', 'textdomain' ),
 		                       'menu_name'         => __( 'Inflables', 'textdomain' ),
+                               'rewrite' => array( 'slug' => 'inflable' ),
                            ],
                            'public'      => true,
                            'has_archive' => true,
@@ -94,7 +97,7 @@ add_action('init', 'azulcaribe_inflable');
 
 function azulcaribe_mantita()
 {
-    register_post_type('azulcaribe_mantita',
+    register_post_type('mantita',
                        [
                            'labels'      => [
                                'name'          => __('Mantas de playa'),
@@ -112,6 +115,7 @@ function azulcaribe_mantita()
                            'public'      => true,
                            'has_archive' => true,
                            'menu_position' => 5,
+                           'rewrite' => array( 'slug' => 'mantitas' ),
                        ]
     );
 }
@@ -119,7 +123,7 @@ add_action('init', 'azulcaribe_mantita');
 
 function azulcaribe_sombrero()
 {
-    register_post_type('azulcaribe_sombrero',
+    register_post_type('sombrero',
                        [
                            'labels'      => [
                                'name'          => __('Sombreros'),
@@ -137,6 +141,7 @@ function azulcaribe_sombrero()
                            'public'      => true,
                            'has_archive' => true,
                            'menu_position' => 5,
+                           'rewrite' => array( 'slug' => 'sombrero' ),
                        ]
     );
 }
@@ -144,7 +149,7 @@ add_action('init', 'azulcaribe_sombrero');
 
 function azulcaribe_bolsas()
 {
-    register_post_type('azulcaribe_bolsas',
+    register_post_type('bolsas',
                        [
                            'labels'      => [
                                'name'          => __('Bolsas de playa'),
@@ -162,6 +167,7 @@ function azulcaribe_bolsas()
                            'public'      => true,
                            'has_archive' => true,
                            'menu_position' => 5,
+                           'rewrite' => array( 'slug' => 'bolsas' ),
                        ]
     );
 }
@@ -169,7 +175,7 @@ add_action('init', 'azulcaribe_bolsas');
 
 function azulcaribe_accesorio()
 {
-    register_post_type('azulcaribe_accesorio',
+    register_post_type('accesorio',
                        [
                            'labels'      => [
                                'name'          => __('Accesorios'),
@@ -187,8 +193,18 @@ function azulcaribe_accesorio()
                            'public'      => true,
                            'has_archive' => true,
                            'menu_position' => 5,
+                           'rewrite' => array( 'slug' => 'accesorio' ),
                        ]
     );
 }
 add_action('init', 'azulcaribe_accesorio');
+
+// Show posts of 'post', 'bikini' and 'lentes' post types on home page
+
+function add_my_post_types_to_query( $query ) {
+  if ( is_home() && $query->is_main_query() )
+    $query->set( 'post_type', array('bikini', 'lentes','inflable', 'mantita', 'sombrero','bolsas','accesorio' ) );
+  return $query;
+}
+add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
 
