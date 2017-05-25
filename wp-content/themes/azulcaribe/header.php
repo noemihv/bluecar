@@ -39,6 +39,7 @@
 	<?php // end analytics. ?>
 
 </head>
+<body <?php body_class(); ?> itemscope itemtype="http://schema.org/WebPage">
 <header class="header" id="header">
 	<img src="<?php echo esc_html( get_template_directory_uri() ) . '/library/images/azulcaribe.jpg'; ?>" class="logo" alt="">
 	<!--<img src="menu-hamburger2.svg" class="menu-hamburger" alt="">-->
@@ -87,10 +88,12 @@
 				</ul>
 			</li>
 			<li class="main-menu-li"><a class="main-menu-a" href="#">Link7</a></li>
+			<li class="main-menu-li"><a class="main-menu-a" href="#">Link8</a></li>
 		</ul>
 	</div>
 </header>
 
-<body <?php body_class(); ?> itemscope itemtype="http://schema.org/WebPage">
-
+<!--<body <?php body_class(); ?> itemscope itemtype="http://schema.org/WebPage">-->
+<!--
 	<div id="container">
+-->
