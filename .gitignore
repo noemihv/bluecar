@@ -8,4 +8,4 @@ npm-debug.log
 composer.json
 composer.lock
 .DS_Store
-wp-content/themes/azulcaribe/library/css/
+/wp-content/themes/azulcaribe/library/css/*
