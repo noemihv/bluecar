@@ -9,49 +9,13 @@ ALL HTML TAGS
 	box-sizing: border-box;
 }
 
-main {
-	top: 0;
-	margin-top: 130px;
-	padding: 20px 10px 20px 10px;
-}
-
 body{
 	overflow: auto;
-	margin-top: 70px;
 }
 
 /*
 *
-HEADER ELEMENTS
-*
-*/
-.header {
-	text-align: center;
-	background: #fff;
-	position: fixed;
-	width: 100%;
-	top: 0;
-	z-index: 999;
-	height: 70px;
-}
-
-.logo {
-	height: 70px;
-}
-
-.menu-hamburger {
-	position: absolute;
-	left: 0;
-	top: 0;
-	height: 40px;
-	margin-top: 15px;
-	margin-left: 15px;
-	display: block;
-}
-
-/*
-*
-MENU EFFECTS
+HEADER EFFECTS
 *
 */
 .headroom {
@@ -64,98 +28,6 @@ MENU EFFECTS
 
 .headroom--unpinned {
 	transform: translateY(-100%);
-}
-
-/*
-*
-MENU LISTS
-*
-*/
-.main-menu {
-	background: white;
-	text-align: left;
-	position: fixed;
-	width: 200px;
-	height: calc(100vh - 70px);
-	overflow: auto;
-	left: -100%;
-	z-index: 999;
-	top: 0;
-	margin-top: 70px;
-
-	.main-menu-ul {
-
-		.main-menu-li {
-			display: block;
-			padding: 20px;
-			position: relative;
-			width: auto;
-
-			.main-menu-a {
-				text-decoration: none;
-				font-size: 15px;
-				color: #f06292;
-			}
-
-		}
-
-		.main-menu-li:hover {
-			background: #e3f2fd;
-		}
-
-		.main-menu-dropdown {
-			display: block;
-			padding: 20px;
-			position: relative;
-			width: auto;
-
-			.main-menu-a {
-				text-decoration: none;
-				font-size: 15px;
-				color: #f06292;
-			}
-
-			.main-menu-li-ul {
-				position: relative;
-				border-style: none;
-				background: none;
-				display: block;
-				list-style-type: none;
-				list-style-position:inside;
-				margin:0;
-				padding:0;
-				left: 0;
-				width: 100%;
-
-				.main-menu-li-ul-li {
-					padding: 0;
-					left: 0;
-					padding: 0;
-					padding-top: 5px;
-					padding-bottom: 5px;
-					margin-left: 10%;
-
-					.main-menu-li-ul-li-a {
-						display:block;
-						text-decoration: none;
-					}
-
-				}
-
-				.main-menu-li-ul-li:hover {
-					background: #e3f2fd;
-				}
-
-			}
-
-		}
-
-		.main-menu-dropdown:hover {
-			background: #e3f2fd;
-		}
-
-	}
-
 }
 
 /*
@@ -193,7 +65,7 @@ MENU LISTS
 }
 
 .svg-menu-toggle-cross {
-
+	
 	.bar:nth-of-type(1) {
 		-webkit-transform:rotate(-45deg) translateY(0) translateX(0);
 		transform:rotate(-45deg) translateY(0) translateX(0);
@@ -208,4 +80,134 @@ MENU LISTS
 		transform:rotate(45deg) translateY(0em) translateX(0em);
 	}
 
+}
+
+/*
+*
+HEADER ELEMENTS
+*
+*/
+.header {
+	text-align: center;
+	background: #fff;
+	position: fixed;
+	width: 100%;
+	top: 0;
+	z-index: 999;
+	height: 70px;
+}
+
+.logo {
+	height: 70px;
+}
+
+.menu-hamburger {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 40px;
+	margin-top: 15px;
+	margin-left: 15px;
+	display: block;
+}
+
+/*
+*
+MENU LISTS
+*
+*/
+.main-menu {
+	background: white;
+	text-align: left;
+	position: fixed;
+	width: 200px;
+	height: calc(100vh - 70px);
+	overflow: auto;
+	left: -100%;
+	z-index: 999;
+	top: 0;
+	margin-top: 70px;
+
+	.main-menu-ul {
+
+		.main-menu-li {
+			display: block;
+			padding: 20px;
+			position: relative;
+			width: 200px;
+
+			.main-menu-a {
+				text-decoration: none;
+				font-size: 15px;
+				color: #f06292;
+			}
+
+			.main-menu-a:hover {
+				color: #90caf9;
+			}
+
+		}
+
+		.main-menu-li:hover {
+			background: white;
+		}
+
+		.main-menu-dropdown {
+			display: block;
+			padding: 20px;
+			position: relative;
+			width: 200px;
+
+			.main-menu-a {
+				text-decoration: none;
+				font-size: 15px;
+				color: #f06292;
+			}
+
+			.main-menu-a:hover {
+				cursor: pointer;
+				color: #90caf9;
+			}
+
+			.main-menu-li-ul {
+				display: none;
+				list-style-type: none;
+				list-style-position:inside;
+				margin:0;
+				padding:0;
+				left: 0;
+				width: 100%;
+				border-width: 1px;
+				border-color: #f06292;
+				margin-top: 10px;
+				position: relative;
+				border-style: none;
+				background: none;
+
+				.main-menu-li-ul-li {
+					padding: 0;
+					left: 0;
+					padding-top: 5px;
+					padding-bottom: 5px;
+
+					.main-menu-li-ul-li-a {
+						display:block;
+						text-decoration: none;
+					}
+
+				}
+
+				.main-menu-li-ul-li:hover {
+					background: white;
+				}
+
+			}
+
+		}
+
+		.main-menu-dropdown:hover {
+			background: white;
+		}
+
+	}
 }
