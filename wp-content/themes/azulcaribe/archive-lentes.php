@@ -22,7 +22,10 @@
 
 						<div><h1 class="archive-title"><?php post_type_archive_title(); ?></h1></div>
 
-							<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+							<?php if (have_posts()) : ?> <?php $args = array( 'post_type' => 'lentes', 'posts_per_page' => 10 );
+						        $loop = new WP_Query( $args );
+								while ( $loop->have_posts() ) : $loop->the_post();
+  							?>
 
 							<article id="post-<?php the_ID(); ?>" <?php post_class( 'cf' ); ?> role="article">
 
@@ -66,13 +69,8 @@
 									</article>
 
 							<?php endif; ?>
-
 						</main>
-
-					<?php get_sidebar(); ?>
-
 				</div>
-
 			</div>
 
 <?php get_footer(); ?>

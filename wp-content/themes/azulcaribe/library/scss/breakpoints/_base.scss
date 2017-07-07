@@ -209,3 +209,19 @@ MENU LISTS
 	}
 
 }
+
+/*Limits to the size of cards*/
+.card-image {
+	
+	img {
+		height: 400px;
+	}
+
+}
+
+/*Modifies archive title*/
+.archive-title {
+	color: #f06292;
+	font-size:1.9em;
+	text-align: center;
+} 
