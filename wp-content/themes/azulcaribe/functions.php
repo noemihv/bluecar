@@ -21,32 +21,98 @@ function azulcaribe_init() {
 }
 add_action( 'after_setup_theme', 'azulcaribe_init' );
 
-function azulcaribe_bikini()
-{
-    register_post_type('bikini',
-                       [
-                           'labels'      => [
-                               'name'          => __('Bikinis'),
-                               'singular_name' => __('Bikini'),
-                               'search_items'      => __( 'Buscar bikini', 'textdomain' ),
-		                       'all_items'         => __( 'Todos los bikinis', 'textdomain' ),
-		                       'parent_item'       => __( 'Parent product', 'textdomain' ),
-		                       'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
-		                       'edit_item'         => __( 'Editar bikini', 'textdomain' ),
-		                       'update_item'       => __( 'Actualizar Bikini', 'textdomain' ),
-		                       'add_new_item'      => __( 'Agregar nuevo Bikini', 'textdomain' ),
-		                       'new_item_name'     => __( 'Nuevo nombre de bikini', 'textdomain' ),
-		                       'menu_name'         => __( 'Bikini', 'textdomain' ),
-                           ],
-                           'public'      => true,
-                           'has_archive' => true,
-                           'menu_position' => 5,
-                           'rewrite' => array( 'slug' => 'bikini' ),
-                       ]
-    );
-}
-add_action('init', 'azulcaribe_bikini');
+// ------- BIKINI POST TYPE -------
+function azulcaribe_bikini() {
+	$labels = array(
+		'name'          => __( 'Bikinis' ),
+		'singular_name' => __( 'Bikini' ),
+		'search_items'      => __( 'Buscar bikini', 'textdomain' ),
+		'all_items'         => __( 'Todos los bikinis', 'textdomain' ),
+		'parent_item'       => __( 'Parent product', 'textdomain' ),
+		'parent_item_colon' => __( 'Parent product:', 'textdomain' ),
+		'edit_item'         => __( 'Editar bikini', 'textdomain' ),
+		'update_item'       => __( 'Actualizar Bikini', 'textdomain' ),
+		'add_new_item'      => __( 'Agregar nuevo Bikini', 'textdomain' ),
+		'new_item_name'     => __( 'Nuevo nombre de bikini', 'textdomain' ),
+		'menu_name'         => __( 'Bikini', 'textdomain' ),
+	);
 
+	$args = array(
+		'labels'               => $labels,
+		'public'               => true,
+		'publicly_queryable'   => true,
+		'show_ui'              => true,
+		'show_in_menu'         => true,
+		'query_var'            => true,
+		'rewrite'              => array(
+			'slug' => 'bikini',
+		),
+		'capability_type'      => 'post',
+		'has_archive'          => true,
+		'hierarchical'         => false,
+		'menu_position'        => null,
+		'supports'             => array( 'title', 'thumbnail', 'excerpt' ),
+	);
+
+	register_post_type( 'bikini', $args );
+}
+add_action( 'init', 'azulcaribe_bikini' );
+add_action( 'add_meta_boxes', 'bikini_meta_boxes' );
+add_action( 'save_post',  'save_bikini_meta_boxes',  10, 2 );
+
+function bikini_meta_boxes() {
+	add_meta_box(
+		'bikini_price',
+		'Precio',
+		'render_bikini_meta_boxes' ,
+		'bikini',
+		'side',
+		'low'
+	);
+}
+
+function render_bikini_meta_boxes( $post ) {
+	$meta = get_post_custom( $post->ID );
+	$price = isset( $meta['price'][0] ) ? $meta['price'][0] : '';
+
+	wp_nonce_field( basename( __FILE__ ), 'bikini_price' );
+	?>
+	
+	<input name="bikini_price_field" id="bikini_price_field" type="text" value=" <?php echo esc_html( $price ); ?> ">
+
+	<?php
+}
+
+function save_bikini_meta_boxes( $post_id ) {
+	global $post;
+	// Verify nonce.
+	if ( ! isset( $_POST['bikini_price'] ) || ! wp_verify_nonce( $_POST['bikini_price'], basename( __FILE__ ) ) ) {
+		return $post_id;
+	}
+	// Check Autosave.
+	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || isset( $_REQUEST['bulk_edit'] ) ){
+		return $post_id;
+	}
+	// Don't save if only a revision.
+	if ( isset( $post->post_type ) && 'revision' === $post->post_type ) {
+		return $post_id;
+	}
+	// Check permissions.
+	if ( ! current_user_can( 'edit_post', $post->ID ) ) {
+		return $post_id;
+	}
+
+	$meta['price'] = isset( $_POST['bikini_price_field'] ) ? $_POST['bikini_price_field'] : '';
+
+	foreach ( $meta as $key => $value ) {
+		update_post_meta( $post->ID, $key, $value );
+	}
+}
+
+// ------- /BIKINI POST TYPE -------
+
+
+// ------- LENTES POST TYPE -------
 
 function azulcaribe_lentes()
 {
@@ -73,6 +139,8 @@ function azulcaribe_lentes()
     );
 }
 add_action('init', 'azulcaribe_lentes');
+
+// ------- /LENTES POST TYPE -------
 
 function azulcaribe_inflable()
 {
@@ -213,3 +281,5 @@ function add_my_post_types_to_query( $query ) {
 }
 add_action( 'pre_get_posts', 'add_my_post_types_to_query' );
 
+// add support for featured images:
+add_theme_support( 'post-thumbnails' );

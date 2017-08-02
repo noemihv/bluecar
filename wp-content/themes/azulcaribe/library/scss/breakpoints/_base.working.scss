@@ -11,133 +11,8 @@ ALL HTML TAGS
 
 body{
 	overflow: auto;
-	background: white;
 }
 
-/*
-MATERIALIZE OVERRIDES
-*/
-.row {
-	margin: 0;
-}
-
-/*
-* MAIN CONTENT
-*/
-
-.error-alert {
-	background: #ef5350;
-	color: white;
-	text-align: center;
-	border-radius: 5px;
-}
-
-.success-alert {
-	background: #00897b;
-	color: white;
-	text-align: center;
-	font-size: 20px;
-	height: 70px;
-}
-
-.main-container {
-	margin-top: 70px;
-}
-
-// .card-title {
-// 	text-transform: uppercase;
-// }
-
-// .card-image {
-// 	height: 100%;
-// 	max-height: 100% !important;
-// }
-
-.card {
-	height: auto !important;
-	width: 100% !important;
-
-	.card-image {
-		
-		.card-title {
-			padding: 0px !important;
-			padding-left: 30px !important;
-			padding-bottom: 80px !important;
-			text-transform: uppercase;
-			font-size: 30px;
-		}
-	
-	}
-
-	.card-action {
-		
-		a {
-			color: $azulcaribe-pink !important;
-		}
-
-	}
-
-}
-
-.section {
-	margin-top: 30px;
-	margin-bottom: 30px;
-	text-align: center;
-
-	h3 {
-		text-transform: uppercase;
-		color: $azulcaribe-blue;
-	}
-
-}
-
-.txt-section {
-	text-align: center;
-	padding: 40px;
-
-	h1 {
-		font-size: 35px;
-		text-transform: uppercase;
-	}
-
-}
-
-.slider {
-	height: 440px !important;
-
-	.slides {
-		height: 400px !important;
-	}
-
-}
-
-.section-dark {
-	background-color: $section-dark-color;
-}
-
-.carousel {
-	height: 600px;
-}
-
-.within-parallax {
-
-	h3 {
-		font-size: 50px;
-		padding: 10px;
-		margin-top: 190px;
-		color: white;
-	}
-
-	h5 {
-		font-size: 30px;
-		padding: 10px;
-		margin: 0;
-	}
-
-	position: absolute;
-	left: 40px;
-	transform: translateY('50%');
-}
 /*
 *
 HEADER EFFECTS
@@ -160,10 +35,9 @@ HEADER EFFECTS
 */
 
 .svg-menu-toggle {
-	fill: $menu-hamburger-color;
+	fill: #90caf9;
 	pointer-events:all; /*needs to be there so the hover works*/
 	cursor:pointer;
-	top: 0;
 
 	.bar {
 		-webkit-transform:rotate(0) translateY(0) translateX(0);
@@ -215,7 +89,7 @@ HEADER ELEMENTS
 */
 .header {
 	text-align: center;
-	background: $header-background-color;
+	background: #fff;
 	position: fixed;
 	width: 100%;
 	top: 0;
@@ -232,7 +106,7 @@ HEADER ELEMENTS
 	left: 0;
 	top: 0;
 	height: 40px;
-	margin-top: 8px;
+	margin-top: 15px;
 	margin-left: 15px;
 	display: block;
 }
@@ -243,12 +117,11 @@ MENU LISTS
 *
 */
 .main-menu {
-	background: $main-menu-background-color;
+	background: white;
 	text-align: left;
 	position: fixed;
 	width: 200px;
-	// height: calc(100vh - 70px);
-	height: 100vh;
+	height: calc(100vh - 70px);
 	overflow: auto;
 	left: -100%;
 	z-index: 999;
@@ -262,18 +135,21 @@ MENU LISTS
 			padding: 20px;
 			position: relative;
 			width: 200px;
-			text-transform: uppercase;
 
 			.main-menu-a {
 				text-decoration: none;
 				font-size: 15px;
-				color: $menu-link-color;
+				color: #f06292;
 			}
 
 			.main-menu-a:hover {
-				color: $menu-link-hover-color;
+				color: #90caf9;
 			}
 
+		}
+
+		.main-menu-li:hover {
+			background: white;
 		}
 
 		.main-menu-dropdown {
@@ -281,17 +157,16 @@ MENU LISTS
 			padding: 20px;
 			position: relative;
 			width: 200px;
-			text-transform: uppercase;
 
 			.main-menu-a {
 				text-decoration: none;
 				font-size: 15px;
-				color: $menu-link-color;
+				color: #f06292;
 			}
 
 			.main-menu-a:hover {
 				cursor: pointer;
-				color: $menu-link-hover-color;
+				color: #90caf9;
 			}
 
 			.main-menu-li-ul {
@@ -330,60 +205,25 @@ MENU LISTS
 
 		}
 
+		.main-menu-dropdown:hover {
+			background: white;
+		}
+
 	}
 }
 
-/*
-FOOTER
-*/
-.page-footer {
-	background-color: $azulcaribe-pink;
-	text-align: center;
+/*Limits to the size of cards*/
+.card-image {
 	
-	.footer-copyright {
-		background-color: $copyright-footer-color;
-	}
-
-	.footer-social {
-		text-align: center;
-	}
-
-	.fa {
-		margin: 10px;
-		color: white;
-	}
-
-}
-
-/*
-ABOUT PAGE
-*/
-
-.hero {
-	height: 400px;
-	position:relative;
-	text-align: center;
-	color:white;
-	top:0;
-	left:0;
-	background: url('img/video-services.jpg') no-repeat center;
-	padding: 0;
-
-	h3 {
-		text-transform: uppercase;
-	}
-}
-
-/*
-ARCHIVE PAGES
-*/
-
-.archive-single-product-content {
-	height: auto;
-
 	img {
-		width: 100%;
-		height: auto;
+		height: 400px;
 	}
 
 }
+
+/*Modifies archive title*/
+.archive-title {
+	color: #f06292;
+	font-size:1.9em;
+	text-align: center;
+} 
