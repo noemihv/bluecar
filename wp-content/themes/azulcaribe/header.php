@@ -40,8 +40,8 @@
 
 </head>
 <body <?php body_class(); ?> itemscope itemtype="http://schema.org/WebPage">
-	<header class="header" id="header">
-		<img src="<?php echo esc_html( get_template_directory_uri() ) . '/library/images/azulcaribe.jpg'; ?>" class="logo" alt="">
+	<header class="header z-depth-1" id="header">
+		<a href="/"><img src="<?php echo esc_html( get_template_directory_uri() ) . '/library/images/azulcaribe.jpg'; ?>" class="logo" alt=""></a>
 		<!--<img src="menu-hamburger2.svg" class="menu-hamburger" alt="">-->
 
 		<svg class="menu-hamburger" id="menu-hamburger-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 22.5" enable-background="new 0 0 32 22.5" xml:space="preserve">
@@ -62,11 +62,6 @@
 
 		<div class="main-menu" mobile-hidden="true">
 			<ul class="main-menu-ul">
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link0</a></li>
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link1</a></li>
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link2</a></li>
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link3</a></li>
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link4</a></li>
 				<li class="main-menu-dropdown">
 					<label class="main-menu-a">Dropdown</label>
 					<ul class="main-menu-li-ul">
@@ -76,8 +71,6 @@
 						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
 					</ul>
 				</li>
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link5</a></li>
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link6</a></li>
 				<li class="main-menu-dropdown">
 					<label class="main-menu-a">Dropdown</label>
 					<ul class="main-menu-li-ul">
@@ -87,8 +80,24 @@
 						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
 					</ul>
 				</li>
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link7</a></li>
-				<li class="main-menu-li"><a class="main-menu-a" href="#">Link8</a></li>
+				<li class="main-menu-dropdown">
+					<label class="main-menu-a">Dropdown</label>
+					<ul class="main-menu-li-ul">
+						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
+						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
+						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
+						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
+					</ul>
+				</li>
+				<li class="main-menu-dropdown">
+					<label class="main-menu-a">Dropdown</label>
+					<ul class="main-menu-li-ul">
+						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
+						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
+						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
+						<li class="main-menu-li-ul-li"><a href="" class="main-menu-li-ul-li-a">Sublink</a></li>
+					</ul>
+				</li>
 			</ul>
 		</div>
 	</header>

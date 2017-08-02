@@ -2,36 +2,12 @@
 	height: 110px;
 }
 
-.menu-hamburger {
-	display: none;
-}
-
 .logo {
 	height: 50px;
 }
 
-/*
-* MAIN CONTENT
-*/
-.main-container {
-	margin-top: 110px;
-}
-
-.txt-section {
-
-	h1 {
-		font-size: 40px;
-	}
-
-	p {
-		padding: 30px;
-		font-size: 20px;
-	}
-
-}
-
-#contacto {
-	padding: 100px;
+.menu-hamburger {
+	display: none;
 }
 
 .main-menu {
@@ -40,7 +16,6 @@
 	height: 60px;
 	left: 0;
 	overflow: visible;
-	margin-top: 50px;
 
 	.main-menu-ul {
 
@@ -72,5 +47,3 @@
 
 	}
 }
-
-

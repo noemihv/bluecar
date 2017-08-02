@@ -12,6 +12,7 @@ function azulcaribe_scripts_and_styles() {
 
 	// Register scripts.
 	wp_register_script( 'azulcaribe-materialize-js', '//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js', array( 'jquery' ) );
+	wp_register_script( 'azulcaribe-fontawesome-js', 'https://use.fontawesome.com/a474d294a6.js', array() );
 
 	// Enqueue styles.
 	wp_enqueue_style( 'azulcaribe-materialize-css' );
@@ -20,6 +21,7 @@ function azulcaribe_scripts_and_styles() {
 
 	// Enqueue scripts.
 	wp_enqueue_script( 'azulcaribe-materialize-js' );
+	wp_enqueue_script( 'azulcaribe-fontawesome-js' );
 }
 
 /**
