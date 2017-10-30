@@ -32,6 +32,12 @@ function azulcaribe_scripts_and_styles() {
 function azulcaribe_dom_init() {
 	wp_register_script( 'azulcaribe-home-js-init', get_template_directory_uri() . '/library/js/dom-init/home.js', array( 'jquery' ) );
 	wp_enqueue_script( 'azulcaribe-home-js-init' );
+
+	// enqueue script for bikini archive.
+	if ( is_post_type_archive( 'bikini' ) ) {
+		wp_register_script( 'azulcaribe-archive-bikini-js-init', get_template_directory_uri() . '/library/js/dom-init/archive-bikini.js', array( 'jquery' ) );
+		wp_enqueue_script( 'azulcaribe-archive-bikini-js-init' );
+	}
 }
 
 /**

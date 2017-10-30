@@ -378,8 +378,40 @@ ABOUT PAGE
 ARCHIVE PAGES
 */
 
-.archive-single-product-content {
+.product-archive-img {
 	height: auto;
+	width: 100%;
+}
+
+.archive-single-product-content {
+	height: 350px;
+	position: relative;
+
+	.fast-view-chip {
+		visibility: hidden;
+		position: absolute;
+		height: 40px;
+		top: 0;
+		left: 0;
+		margin-top: 200px;
+		width: 100%;
+		color: white;
+
+		p {
+			font-size: 10px;
+			margin-top: 15px;
+			text-transform: uppercase;
+		}
+
+	}
+
+	a {
+		text-transform: uppercase;
+	}
+
+	.fast-view-chip:hover {
+		cursor: pointer;
+	}
 
 	img {
 		width: 100%;
