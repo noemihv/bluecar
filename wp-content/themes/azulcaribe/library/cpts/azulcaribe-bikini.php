@@ -23,6 +23,7 @@ function azulcaribe_bikini() {
 		'show_in_menu'         => true,
 		'show_in_rest'         => true,
 		'query_var'            => true,
+		'taxonomies'           => array( 'post_tag' ),
 		'rewrite'              => array(
 			'slug' => 'bikini',
 		),
@@ -52,16 +53,21 @@ function azulcaribe_bikini_rest_api_init() {
 			'callback' => 'azulcaribe_rest_api_fetch_bikinis',
 		)
 	);
-	// route to get a single bikini
+	// route to get a single bikini.
 	register_rest_route(
 		'azulcaribe/v1',
-		'/bikinis/(?P<uuid>\d+)',
+		'/bikinis/single/(?P<uuid>[a-zA-Z0-9-]+)',
 		array(
 			'methods'  => 'GET',
-			'callback' => 'azulcaribe_rest_api_fetch_bikinis',
+			'callback' => 'azulcaribe_rest_api_fetch_single_bikini',
+			'args' => array(
+				'uuid' => array(
+					'validate_callback' => 'azulcaribe_bikini_uuid_validation',
+				),
+			),
 		)
 	);
-	// route to fetch all pages
+	// route to fetch all pages.
 	register_rest_route(
 		'azulcaribe/v1',
 		'/bikinis/pages',
@@ -70,6 +76,46 @@ function azulcaribe_bikini_rest_api_init() {
 			'callback' => 'azulcaribe_rest_api_get_bikinis_pages',
 		)
 	);
+}
+
+function azulcaribe_rest_api_fetch_single_bikini ( $data ) {
+	$errors = null;
+	$post_to_return = null;
+	$args = array(
+		'post_type'  => 'bikini',
+		'meta_query' => array(
+			array(
+				'key'     => 'uuid',
+				'value'   => $data['uuid'],
+				'compare' => 'IN',
+			),
+		),
+	);
+	$query = new WP_Query( $args );
+
+	if ( $query->have_posts() ) {
+		$post_to_return_raw = $query->posts[0];
+		$tags = get_the_terms( $post_to_return_raw->ID, 'post_tag' );
+		$meta = get_post_meta( $post_to_return_raw->ID );
+		$post_to_return = array();
+		$post_to_return['tags'] = $tags;
+		$post_to_return['price'] = $meta['price'][0];
+		$post_to_return['sizes'] = $meta['sizes'][0];
+		$post_to_return['title'] = get_the_title( $post_to_return_raw->ID );
+		$post_to_return['description'] = get_the_excerpt( $post_to_return_raw->ID );
+		$post_to_return['thumbnail'] = get_the_post_thumbnail_url( $post_to_return_raw->ID );
+	} else {
+		$errors = 'Not found';
+	}
+
+	return [
+		'data' => $post_to_return,
+		'errors' => $errors,
+	];
+}
+
+function azulcaribe_bikini_uuid_validation ( $param ) {
+	return true;
 }
 
 function azulcaribe_rest_api_get_bikinis_pages ( WP_REST_Request $request ) {
@@ -145,7 +191,6 @@ function azulcaribe_rest_api_fetch_bikinis( WP_REST_Request $request ) {
 				$price = $meta['price'][0];
 				$sizes = $meta['sizes'][0];
 				$uuid = array_key_exists( 'uuid', $meta ) ?  $meta['uuid'][0] : '';
-				// echo $uuid;
 				$title = get_the_title( $cur_post->ID );
 				$thumbnail = get_the_post_thumbnail_url( $cur_post->ID );
 

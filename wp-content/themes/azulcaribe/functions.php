@@ -5,6 +5,7 @@
 
 require_once( 'library/azulcaribe.php' );
 require_once( 'library/cpts/azulcaribe-bikini.php' );
+require_once( 'library/taxonomies/custom-taxonomies.php' );
 
 /**
  * Contains all the setup steps for Azulcaribe theme.
