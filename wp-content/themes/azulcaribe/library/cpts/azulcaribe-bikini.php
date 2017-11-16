@@ -243,7 +243,7 @@ function bikini_meta_boxes() {
 		'low'
 	);
 
-	// sizes.
+	sizes.
 	add_meta_box(
 		'bikini_sizes',
 		'Tallas',
@@ -262,6 +262,53 @@ function bikini_meta_boxes() {
 		'side',
 		'low'
 	);
+
+	// colors.
+	add_meta_box(
+		'bikini_colors',
+		'Colores',
+		'render_bikini_colors_meta_box',
+		'bikini',
+		'normal',
+		'low'
+	);
+}
+
+// -------- COLORS RELATED.
+function render_bikini_colors_meta_box ( $post ) {
+	$meta = get_post_custom( $post->ID );
+
+	$colors = isset( $meta['colors'] ) ? $meta['colors'][0]: array();
+
+	wp_nonce_field( basename( __FILE__ ), 'bikini_colors' );
+	?>
+
+	<div id="bikini_colors_div" name="bikini_colors_div">
+
+		<?php
+		if ( count( $colors ) > 0 ) {
+			echo 'greater than 0';
+		} else {
+			?>
+			<input type="text" name="color-" id="color-" placeholder="Color">
+			<input type="text" name="color-hexa-" id="color-hexa-" placeholder="Hexadecimal">
+			<div>
+				<h4>Tallas</h4>
+				<input type="checkbox" name="color-size-xs-" id="color-size-xs-" >XS<br>
+				<input type="checkbox" name="color-size-s-" id="color-size-s-" >S<br>
+				<input type="checkbox" name="color-size-m-" id="color-size-m-" >M<br>
+				<input type="checkbox" name="color-size-l-" id="color-size-l-" >L<br>
+				<input type="checkbox" name="color-size-xl-" id="color-size-xl-" >XL<br>
+			</div>
+			<div>
+				<h4>Imagen</h4>
+			</div>
+			<?php
+		}
+		?>
+
+	</div>
+<?php
 }
 
 // -------- PRICES RELATED.
