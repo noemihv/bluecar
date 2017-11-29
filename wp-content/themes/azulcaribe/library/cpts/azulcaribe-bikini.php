@@ -40,8 +40,7 @@ add_action( 'init', 'azulcaribe_bikini' );
 add_action( 'rest_api_init', 'azulcaribe_bikini_rest_api_init' );
 add_action( 'add_meta_boxes', 'bikini_meta_boxes' );
 add_action( 'save_post', 'save_bikini_price_meta_box', 10, 2 );
-add_action( 'save_post', 'save_bikini_sizes_meta_box', 10, 2 );
-add_action( 'save_post', 'save_bikini_inventory_meta_box', 10, 2 );
+add_action( 'save_post', 'save_bikini_color0_meta_box' );
 
 function azulcaribe_bikini_rest_api_init() {
 	// route to get all bikinis
@@ -243,31 +242,11 @@ function bikini_meta_boxes() {
 		'low'
 	);
 
-	sizes.
-	add_meta_box(
-		'bikini_sizes',
-		'Tallas',
-		'render_bikini_sizes_meta_box',
-		'bikini',
-		'normal',
-		'low'
-	);
-
-	// inventory.
-	add_meta_box(
-		'bikini_inventory',
-		'Inventario',
-		'render_bikini_inventory_meta_box',
-		'bikini',
-		'side',
-		'low'
-	);
-
 	// colors.
 	add_meta_box(
 		'bikini_colors',
 		'Colores',
-		'render_bikini_colors_meta_box',
+		'render_bikini_color0_meta_box',
 		'bikini',
 		'normal',
 		'low'
@@ -275,40 +254,106 @@ function bikini_meta_boxes() {
 }
 
 // -------- COLORS RELATED.
-function render_bikini_colors_meta_box ( $post ) {
+function render_bikini_color0_meta_box ( $post ) {
 	$meta = get_post_custom( $post->ID );
-
-	$colors = isset( $meta['colors'] ) ? $meta['colors'][0]: array();
-
 	wp_nonce_field( basename( __FILE__ ), 'bikini_colors' );
-	?>
 
-	<div id="bikini_colors_div" name="bikini_colors_div">
-
-		<?php
-		if ( count( $colors ) > 0 ) {
-			echo 'greater than 0';
-		} else {
-			?>
-			<input type="text" name="color-" id="color-" placeholder="Color">
-			<input type="text" name="color-hexa-" id="color-hexa-" placeholder="Hexadecimal">
-			<div>
-				<h4>Tallas</h4>
-				<input type="checkbox" name="color-size-xs-" id="color-size-xs-" >XS<br>
-				<input type="checkbox" name="color-size-s-" id="color-size-s-" >S<br>
-				<input type="checkbox" name="color-size-m-" id="color-size-m-" >M<br>
-				<input type="checkbox" name="color-size-l-" id="color-size-l-" >L<br>
-				<input type="checkbox" name="color-size-xl-" id="color-size-xl-" >XL<br>
-			</div>
-			<div>
-				<h4>Imagen</h4>
-			</div>
-			<?php
-		}
+	for ( $i = 0; $i < 2; $i ++ ) {
+		$cur_color_name = isset( $meta['color' . $i . '_name'] ) ? $meta['color' . $i . '_name'][0] : '';
+		$cur_color_hexa = isset( $meta['color' . $i . '_hexa'] ) ? $meta['color' . $i . '_hexa'][0] : '';
+		$cur_color_inventory = isset( $meta['color' . $i . '_inventory'][0] ) ? $meta['color' . $i . '_inventory'][0] : 0;
+		$cur_color_image = isset( $meta['color' . $i . '_image'][0] ) ? $meta['color' . $i . '_image'][0] : '';
+		$cur_color_xs_checked = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 'xs', explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
+		$cur_color_s_checked  = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 's',  explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
+		$cur_color_m_checked  = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 'm',  explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
+		$cur_color_l_checked  = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 'l',  explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
+		$cur_color_xl_checked = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 'xl', explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
 		?>
 
-	</div>
-<?php
+		<div id="bikini-color<?php echo esc_html( $i ) ?>_div" name="bikini-color<?php echo esc_html( $i ) ?>_div">
+			<input type="text" name="color<?php echo esc_html( $i ) ?>_name" id="color<?php echo esc_html( $i ) ?>_name" placeholder="Color" value="<?php echo esc_html( $cur_color_name ); ?>">
+			<input type="text" name="color<?php echo esc_html( $i ) ?>_hexa" id="color<?php echo esc_html( $i ) ?>_hexa" placeholder="Hexadecimal" value="<?php echo esc_html( $cur_color_hexa ); ?>">
+			
+			<div>
+				<h4>Tallas</h4>
+				<input type="checkbox" value="xs" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_xs_checked ); ?>>XS<br>
+				<input type="checkbox" value="s" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_s_checked ); ?>>S<br>
+				<input type="checkbox" value="m" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_m_checked ); ?>>M<br>
+				<input type="checkbox" value="l" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_l_checked ); ?>>L<br>
+				<input type="checkbox" value="xl" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_xl_checked ); ?>>XL<br>
+			</div>
+
+			<div>
+				<h4>Inventario</h4>
+				<input type="text" name="color<?php echo esc_html( $i ) ?>_inventory" id="color<?php echo esc_html( $i ) ?>_inventory" placeholder="" value="<?php echo esc_html( $cur_color_inventory ); ?>"><span>unidades</span>
+			</div>
+
+			<div>
+				<h4>Imagen</h4>
+				<input type="text" name="color<?php echo esc_html( $i ) ?>_image" id="color<?php echo esc_html( $i ) ?>_inventory" placeholder="URL" value="<?php echo esc_html( $cur_color_image ) ?>">
+			</div>
+		</div>
+
+		<?php
+	}
+}
+
+function save_bikini_color0_meta_box ( $post_id ) {
+	global $post;
+	$meta = array();
+	// Verify nonce.
+	if ( ! isset( $_POST['bikini_colors'] ) || ! wp_verify_nonce( $_POST['bikini_colors'], basename( __FILE__ ) ) ) {
+		return $post_id;
+	}
+	// Check Autosave.
+	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || isset( $_REQUEST['bulk_edit'] ) ){
+		return $post_id;
+	}
+	// Don't save if only a revision.
+	if ( isset( $post->post_type ) && 'revision' === $post->post_type ) {
+		return $post_id;
+	}
+	// Check permissions.
+	if ( ! current_user_can( 'edit_post', $post->ID ) ) {
+		return $post_id;
+	}
+
+	for ( $i = 0; $i < 2; $i ++ ) {
+		// Save color0 name.
+		if ( isset( $_POST['color' . $i . '_name'] ) ) {
+			$meta['color' . $i . '_name'] = $_POST['color' . $i . '_name'];
+		}
+
+		// Save color0 hexa.
+		if ( isset( $_POST['color' . $i . '_hexa'] ) ) {
+			$meta['color' . $i . '_hexa'] = $_POST['color' . $i . '_hexa'];
+		}
+
+		// Save sizes for color0.
+		if ( isset( $_POST['color' . $i . '_sizes'] ) ) {
+			$meta['color' . $i . '_sizes'] = '';
+			foreach ( $_POST['color' . $i . '_sizes'] as $size ) {
+				if ( '' !== $meta['color' . $i . '_sizes'] ) {
+					$meta['color' . $i . '_sizes'] .= ',';
+				}
+				$meta['color' . $i . '_sizes'] .= $size;
+			}
+		}
+
+		// Save color0 inventory.
+		if ( isset( $_POST['color' . $i . '_inventory'] ) ) {
+			$meta['color' . $i . '_inventory'] = $_POST['color' . $i . '_inventory'];
+		}
+
+		// Save color0 image
+		if ( isset( $_POST['color' . $i . '_image'] ) ) {
+			$meta['color' . $i . '_image'] = $_POST['color' . $i . '_image'];
+		}
+	}
+
+	foreach ( $meta as $key => $value ) {
+		update_post_meta( $post->ID, $key, $value );
+	}
 }
 
 // -------- PRICES RELATED.
@@ -319,7 +364,7 @@ function render_bikini_price_meta_box( $post ) {
 	wp_nonce_field( basename( __FILE__ ), 'bikini_price' );
 	?>
 	
-	<input name="bikini_price_field" id="bikini_price_field" type="text" value=" <?php echo esc_html( $price ); ?> ">
+	<span>$</span><input name="bikini_price_field" id="bikini_price_field" type="text" value=" <?php echo esc_html( $price ); ?> ">
 
 	<?php
 }
@@ -345,102 +390,6 @@ function save_bikini_price_meta_box( $post_id ) {
 
 	$meta['price'] = ( isset( $_POST['bikini_price_field'] ) && is_numeric( $_POST['bikini_price_field'] ) ) ? $_POST['bikini_price_field'] : 0;
 	$meta['uuid'] = wp_generate_uuid4();
-
-	foreach ( $meta as $key => $value ) {
-		update_post_meta( $post->ID, $key, $value );
-	}
-}
-
-// -------- SIZES RELATED.
-function render_bikini_sizes_meta_box( $post ) {
-	$meta = get_post_custom( $post->ID );
-	// $price = isset( $meta['price'][0] ) ? $meta['price'][0] : '';
-	$xs_checked = ( isset( $meta['sizes'] ) && in_array( 'xs', explode( ',', $meta['sizes'][0] ), true ) )? 'checked' : '';
-	$s_checked  = ( isset( $meta['sizes'] ) && in_array( 's',  explode( ',', $meta['sizes'][0] ), true ) )? 'checked' : '';
-	$m_checked  = ( isset( $meta['sizes'] ) && in_array( 'm',  explode( ',', $meta['sizes'][0] ), true ) )? 'checked' : '';
-	$l_checked  = ( isset( $meta['sizes'] ) && in_array( 'l',  explode( ',', $meta['sizes'][0] ), true ) )? 'checked' : '';
-	$xl_checked = ( isset( $meta['sizes'] ) && in_array( 'xl', explode( ',', $meta['sizes'][0] ), true ) )? 'checked' : '';
-
-	wp_nonce_field( basename( __FILE__ ), 'bikini_sizes' );
-	?>
-	
-	<input name="sizes[]" id="sizes" value="xs" type="checkbox" <?php echo esc_html( $xs_checked ); ?>>XS<br>
-	<input name="sizes[]" id="sizes" value="s" type="checkbox" <?php echo esc_html( $s_checked ); ?>>S<br>
-	<input name="sizes[]" id="sizes" value="m" type="checkbox" <?php echo esc_html( $m_checked ); ?>>M<br>
-	<input name="sizes[]" id="sizes" value="l" type="checkbox" <?php echo esc_html( $l_checked ); ?>>L<br>
-	<input name="sizes[]" id="sizes" value="xl" type="checkbox" <?php echo esc_html( $xl_checked ); ?>>XL<br>
-
-	<?php
-}
-
-function save_bikini_sizes_meta_box( $post_id ) {
-	global $post;
-	// Verify nonce.
-	if ( ! isset( $_POST['bikini_sizes'] ) || ! wp_verify_nonce( $_POST['bikini_sizes'], basename( __FILE__ ) ) ) {
-		return $post_id;
-	}
-	// Check Autosave.
-	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || isset( $_REQUEST['bulk_edit'] ) ){
-		return $post_id;
-	}
-	// Don't save if only a revision.
-	if ( isset( $post->post_type ) && 'revision' === $post->post_type ) {
-		return $post_id;
-	}
-	// Check permissions.
-	if ( ! current_user_can( 'edit_post', $post->ID ) ) {
-		return $post_id;
-	}
-
-	if ( isset( $_POST['sizes'] ) ) {
-		$meta['sizes'] = '';
-		foreach ( $_POST['sizes'] as $size ) {
-			if ( '' !== $meta['sizes'] ) {
-				$meta['sizes'] .= ',';
-			}
-			$meta['sizes'] .= $size;
-		}
-	}
-
-	foreach ( $meta as $key => $value ) {
-		update_post_meta( $post->ID, $key, $value );
-	}
-}
-
-// -------- INVENTORY RELATED.
-function render_bikini_inventory_meta_box( $post ) {
-	$meta = get_post_custom( $post->ID );
-	$inventory = isset( $meta['inventory'][0] ) ? $meta['inventory'][0] : 0;
-
-	wp_nonce_field( basename( __FILE__ ), 'bikini_inventory' );
-	?>
-	
-	<input name="bikini_inventory_field" id="bikini_inventory_field" type="text" value=" <?php echo esc_html( $inventory ); ?> ">
-	<label for="bikini_inventory_field">Unidades</label>
-
-	<?php
-}
-
-function save_bikini_inventory_meta_box( $post_id ) {
-	global $post;
-	// Verify nonce.
-	if ( ! isset( $_POST['bikini_inventory'] ) || ! wp_verify_nonce( $_POST['bikini_inventory'], basename( __FILE__ ) ) ) {
-		return $post_id;
-	}
-	// Check Autosave.
-	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || isset( $_REQUEST['bulk_edit'] ) ){
-		return $post_id;
-	}
-	// Don't save if only a revision.
-	if ( isset( $post->post_type ) && 'revision' === $post->post_type ) {
-		return $post_id;
-	}
-	// Check permissions.
-	if ( ! current_user_can( 'edit_post', $post->ID ) ) {
-		return $post_id;
-	}
-
-	$meta['inventory'] = isset( $_POST['bikini_inventory_field'] ) ? $_POST['bikini_inventory_field'] : 0;
 
 	foreach ( $meta as $key => $value ) {
 		update_post_meta( $post->ID, $key, $value );
