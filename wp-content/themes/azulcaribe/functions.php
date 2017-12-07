@@ -13,7 +13,8 @@ require_once( 'library/taxonomies/custom-taxonomies.php' );
  * @return void
  */
 function azulcaribe_init() {
-	add_action( 'wp_enqueue_scripts', 'azulcaribe_scripts_and_styles', 999 );
+    add_action( 'wp_enqueue_scripts', 'azulcaribe_scripts_and_styles', 999 );
+    add_action( 'admin_enqueue_scripts', 'azulcaribe_admin_scripts_and_styles', 999 );
 	add_action( 'wp_enqueue_scripts', 'azulcaribe_dom_init', 999 );
 	add_action( 'wp_enqueue_scripts', 'azulcaribe_menu', 999 );
 	add_action( 'wp_enqueue_scripts', 'azulcaribe_headroom', 999 );

@@ -4,6 +4,11 @@
  *
  * @return void
  */
+function azulcaribe_admin_scripts_and_styles () {
+	wp_register_script( 'azulcaribe-bikinis-js', get_template_directory_uri() . '/library/js/cpts-init/bikinis.js', array( 'jquery' ) );
+	wp_enqueue_script( 'azulcaribe-bikinis-js' );
+}
+
 function azulcaribe_scripts_and_styles() {
 	// Register styles.
 	wp_register_style( 'azulcaribe-materialize-css', '//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css', array(), '', 'all' );

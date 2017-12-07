@@ -258,29 +258,32 @@ function render_bikini_color0_meta_box ( $post ) {
 	$meta = get_post_custom( $post->ID );
 	wp_nonce_field( basename( __FILE__ ), 'bikini_colors' );
 
-	for ( $i = 0; $i < 2; $i ++ ) {
+	for ( $i = 0; $i < 10; $i ++ ) {
 		$cur_color_name = isset( $meta['color' . $i . '_name'] ) ? $meta['color' . $i . '_name'][0] : '';
+		$display_cur_color_div = ( '' === $cur_color_name && 0 !== $i ) ? 'none' : 'block';
 		$cur_color_hexa = isset( $meta['color' . $i . '_hexa'] ) ? $meta['color' . $i . '_hexa'][0] : '';
+		$cur_color_sizes = isset( $meta['color' . $i . '_sizes'] ) ? $meta['color' . $i . '_sizes'][0] : '';
 		$cur_color_inventory = isset( $meta['color' . $i . '_inventory'][0] ) ? $meta['color' . $i . '_inventory'][0] : 0;
 		$cur_color_image = isset( $meta['color' . $i . '_image'][0] ) ? $meta['color' . $i . '_image'][0] : '';
-		$cur_color_xs_checked = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 'xs', explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
-		$cur_color_s_checked  = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 's',  explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
-		$cur_color_m_checked  = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 'm',  explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
-		$cur_color_l_checked  = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 'l',  explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
-		$cur_color_xl_checked = ( isset( $meta['color' . $i . '_sizes'] ) && in_array( 'xl', explode( ',', $meta['color' . $i . '_sizes'][0] ), true ) )? 'checked' : '';
 		?>
 
-		<div id="bikini-color<?php echo esc_html( $i ) ?>_div" name="bikini-color<?php echo esc_html( $i ) ?>_div">
-			<input type="text" name="color<?php echo esc_html( $i ) ?>_name" id="color<?php echo esc_html( $i ) ?>_name" placeholder="Color" value="<?php echo esc_html( $cur_color_name ); ?>">
-			<input type="text" name="color<?php echo esc_html( $i ) ?>_hexa" id="color<?php echo esc_html( $i ) ?>_hexa" placeholder="Hexadecimal" value="<?php echo esc_html( $cur_color_hexa ); ?>">
+		<div id="bikini-color<?php echo esc_html( $i ) ?>-div" name="bikini-color<?php echo esc_html( $i ) ?>-div" style="display:<?php echo esc_html( $display_cur_color_div ) ?>">
+			<br>
+			<button id="<?php echo esc_html( $i ) ?>" class="delete-color-btn button button-primary" style="float: right;">X</button>
+			<h3>Color <?php echo esc_html( $i + 1 ) ?></h3>
+			<div>
+				<h4>Nombre del color:</h4>
+				<input type="text" name="color<?php echo esc_html( $i ) ?>_name" id="color<?php echo esc_html( $i ) ?>_name" placeholder="Color" value="<?php echo esc_html( $cur_color_name ); ?>">
+			</div>
+			
+			<div>
+				<h4>Hexadecimal del color:</h4>
+				<input type="text" name="color<?php echo esc_html( $i ) ?>_hexa" id="color<?php echo esc_html( $i ) ?>_hexa" placeholder="Hexadecimal" value="<?php echo esc_html( $cur_color_hexa ); ?>">
+			</div>
 			
 			<div>
 				<h4>Tallas</h4>
-				<input type="checkbox" value="xs" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_xs_checked ); ?>>XS<br>
-				<input type="checkbox" value="s" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_s_checked ); ?>>S<br>
-				<input type="checkbox" value="m" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_m_checked ); ?>>M<br>
-				<input type="checkbox" value="l" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_l_checked ); ?>>L<br>
-				<input type="checkbox" value="xl" name="color<?php echo esc_html( $i ) ?>_sizes[]" id="color<?php echo esc_html( $i ) ?>_sizes[]" <?php echo esc_html( $cur_color_xl_checked ); ?>>XL<br>
+				<input type="text" name="color<?php echo esc_html( $i ) ?>_sizes" id="color<?php echo esc_html( $i ) ?>_sizes" placeholder="Tallas" value="<?php echo esc_html( $cur_color_sizes ); ?>">
 			</div>
 
 			<div>
@@ -292,10 +295,15 @@ function render_bikini_color0_meta_box ( $post ) {
 				<h4>Imagen</h4>
 				<input type="text" name="color<?php echo esc_html( $i ) ?>_image" id="color<?php echo esc_html( $i ) ?>_inventory" placeholder="URL" value="<?php echo esc_html( $cur_color_image ) ?>">
 			</div>
+			<hr>
+			<br>
 		</div>
 
 		<?php
 	}
+	?>
+	<button id="add-color-btn" class="button button-primary button-large">Agregar color</button>
+<?php
 }
 
 function save_bikini_color0_meta_box ( $post_id ) {
@@ -318,7 +326,7 @@ function save_bikini_color0_meta_box ( $post_id ) {
 		return $post_id;
 	}
 
-	for ( $i = 0; $i < 2; $i ++ ) {
+	for ( $i = 0; $i < 10; $i ++ ) {
 		// Save color0 name.
 		if ( isset( $_POST['color' . $i . '_name'] ) ) {
 			$meta['color' . $i . '_name'] = $_POST['color' . $i . '_name'];
@@ -331,13 +339,7 @@ function save_bikini_color0_meta_box ( $post_id ) {
 
 		// Save sizes for color0.
 		if ( isset( $_POST['color' . $i . '_sizes'] ) ) {
-			$meta['color' . $i . '_sizes'] = '';
-			foreach ( $_POST['color' . $i . '_sizes'] as $size ) {
-				if ( '' !== $meta['color' . $i . '_sizes'] ) {
-					$meta['color' . $i . '_sizes'] .= ',';
-				}
-				$meta['color' . $i . '_sizes'] .= $size;
-			}
+			$meta['color' . $i . '_sizes'] = $_POST['color' . $i . '_sizes'];
 		}
 
 		// Save color0 inventory.
