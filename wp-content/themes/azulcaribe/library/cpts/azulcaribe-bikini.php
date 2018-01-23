@@ -113,10 +113,6 @@ function azulcaribe_rest_api_fetch_single_bikini ( $data ) {
 	];
 }
 
-function azulcaribe_bikini_uuid_validation ( $param ) {
-	return true;
-}
-
 function azulcaribe_rest_api_get_bikinis_pages ( WP_REST_Request $request ) {
 	$query_str_params = $request->get_params();
 	$data = array();
@@ -150,7 +146,85 @@ function azulcaribe_rest_api_get_bikinis_pages ( WP_REST_Request $request ) {
 	];
 }
 
-function azulcaribe_rest_api_fetch_bikinis( WP_REST_Request $request ) {
+/**
+ * Fetch all bikinis according to req params.
+ * If no req params are present, default to specific values 
+ * and perform the query that way.
+ *
+ * @param WP_REST_Request $request
+ * @return void
+ */
+function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
+	$offset = 0;
+	$per_page = 10;
+	$sort_by = 'price';
+	$sort_order = 'DESC';
+	$objects_to_return = array();
+	$errors = array();
+
+	// parse query string params.
+	if ( $request->get_param( 'offset' ) ) $offset = intval( $request->get_param( 'offset' ));
+	if ( $request->get_param( 'per_page' ) ) $per_page = intval( $request->get_param( 'per_page' ) );
+	if ( $request->get_param( 'sort_by' ) ) $sort_by = $request->get_param( 'sort_by' );
+	if ( $request->get_param( 'sort_order' ) ) $sort_order = $request->get_param( 'sort_order' );
+
+	$query_args = array(
+		'post_type'      => 'bikini',
+		'meta_key'       => $sort_by,
+		'order'          => $sort_order,
+		'order_by'       => 'meta_value_num',
+		'posts_per_page' => $per_page,
+		'offset'         => $offset,
+	);
+
+	$query = new WP_Query( $query_args );
+
+	if ( $query->have_posts() ) {
+		foreach ( $query->posts as $cur_post ) {
+			$tmp_obj_as_arr = array();
+			$meta = get_post_meta( $cur_post->ID );
+			$price = floatval( $meta['price'][0] );
+			$uuid = array_key_exists( 'uuid', $meta ) ?  $meta['uuid'][0] : '';
+			$title = get_the_title( $cur_post->ID );
+			$colors_info = array();
+
+			// fetch colors info
+			for ( $i = 0; $i < 10; $i++ ) {
+				// check if color actually exists
+				if ( array_key_exists( 'color' . $i . '_name', $meta ) ) {
+					$tmp_color = array();
+					$tmp_color['color' . $i . '_name']      = $meta['color' . $i . '_name'][0];
+					$tmp_color['color' . $i . '_hexa']      = array_key_exists( 'color' . $i . '_hexa', $meta ) ? $meta['color' . $i . '_hexa'][0] : null;
+					$tmp_color['color' . $i . '_sizes']     = array_key_exists( 'color' . $i . '_sizes', $meta ) ? $meta['color' . $i . '_sizes'][0] : null;
+					$tmp_color['color' . $i . '_inventory'] = array_key_exists( 'color' . $i . '_inventory', $meta ) ? $meta['color' . $i . '_inventory'][0] : null;
+					$tmp_color['color' . $i . '_image']     = array_key_exists( 'color' . $i . '_image', $meta ) ? $meta['color' . $i . '_image'][0] : null;
+
+					// append to colors info array
+					$colors_info['color' . $i] = $tmp_color;
+				}
+			}
+			
+			// create bikini obj
+			$tmp_obj_as_arr['price']  = $price;
+			$tmp_obj_as_arr['uuid']   = $uuid;
+			$tmp_obj_as_arr['title']  = $title;
+			$tmp_obj_as_arr['colors'] = $colors_info;
+
+			// finally, append bikini obj to results
+			array_push( $objects_to_return, $tmp_obj_as_arr );
+		} // End foreach().
+	} // End if().
+
+	// return response
+	$response = [
+		'data' => $objects_to_return,
+		'errors' => $errors,
+	];
+
+	return $response;
+}
+
+function azulcaribe_rest_api_fetch_bikinis_bak ( WP_REST_Request $request ) {
 	// execute query according to params.
 	// these are the only accepted params, everything else will be ignored.
 	$sort_by = $request->get_param( 'sort_by' );
@@ -231,6 +305,10 @@ function azulcaribe_rest_api_fetch_bikinis( WP_REST_Request $request ) {
 
 }
 
+function azulcaribe_bikini_uuid_validation ( $param ) {
+	return true;
+}
+
 function bikini_meta_boxes() {
 	// price.
 	add_meta_box(
@@ -260,10 +338,10 @@ function render_bikini_color0_meta_box ( $post ) {
 
 	for ( $i = 0; $i < 10; $i ++ ) {
 		$cur_color_name = isset( $meta['color' . $i . '_name'] ) ? $meta['color' . $i . '_name'][0] : '';
-		$display_cur_color_div = ( '' === $cur_color_name && 0 !== $i ) ? 'none' : 'block';
+		$display_cur_color_div = ( null === $cur_color_name || ( '' === $cur_color_name && 0 !== $i ) ) ? 'none' : 'block';
 		$cur_color_hexa = isset( $meta['color' . $i . '_hexa'] ) ? $meta['color' . $i . '_hexa'][0] : '';
 		$cur_color_sizes = isset( $meta['color' . $i . '_sizes'] ) ? $meta['color' . $i . '_sizes'][0] : '';
-		$cur_color_inventory = isset( $meta['color' . $i . '_inventory'][0] ) ? $meta['color' . $i . '_inventory'][0] : 0;
+		$cur_color_inventory = isset( $meta['color' . $i . '_inventory'][0] ) ? $meta['color' . $i . '_inventory'][0] : '';
 		$cur_color_image = isset( $meta['color' . $i . '_image'][0] ) ? $meta['color' . $i . '_image'][0] : '';
 		?>
 
@@ -293,7 +371,7 @@ function render_bikini_color0_meta_box ( $post ) {
 
 			<div>
 				<h4>Imagen</h4>
-				<input type="text" name="color<?php echo esc_html( $i ) ?>_image" id="color<?php echo esc_html( $i ) ?>_inventory" placeholder="URL" value="<?php echo esc_html( $cur_color_image ) ?>">
+				<input type="text" name="color<?php echo esc_html( $i ) ?>_image" id="color<?php echo esc_html( $i ) ?>_image" placeholder="URL" value="<?php echo esc_html( $cur_color_image ) ?>">
 			</div>
 			<hr>
 			<br>
@@ -306,6 +384,7 @@ function render_bikini_color0_meta_box ( $post ) {
 <?php
 }
 
+// -------- SAVE COLORS-RELATED STUFF.
 function save_bikini_color0_meta_box ( $post_id ) {
 	global $post;
 	$meta = array();
@@ -327,29 +406,39 @@ function save_bikini_color0_meta_box ( $post_id ) {
 	}
 
 	for ( $i = 0; $i < 10; $i ++ ) {
-		// Save color0 name.
-		if ( isset( $_POST['color' . $i . '_name'] ) ) {
+		// Save color-n name.
+		if ( isset( $_POST['color' . $i . '_name'] ) && '' !== $_POST['color' . $i . '_name']) {
 			$meta['color' . $i . '_name'] = $_POST['color' . $i . '_name'];
+		} else {
+			$meta['color' . $i . '_name'] = null;
 		}
 
-		// Save color0 hexa.
-		if ( isset( $_POST['color' . $i . '_hexa'] ) ) {
+		// Save color-n hexa.
+		if ( isset( $_POST['color' . $i . '_hexa'] ) && '' !== $_POST['color' . $i . '_hexa']) {
 			$meta['color' . $i . '_hexa'] = $_POST['color' . $i . '_hexa'];
+		} else {
+			$meta['color' . $i . '_hexa'] = null;
 		}
 
-		// Save sizes for color0.
-		if ( isset( $_POST['color' . $i . '_sizes'] ) ) {
+		// Save sizes for color-n.
+		if ( isset( $_POST['color' . $i . '_sizes'] ) && '' !== $_POST['color' . $i . '_sizes']) {
 			$meta['color' . $i . '_sizes'] = $_POST['color' . $i . '_sizes'];
+		} else {
+			$meta['color' . $i . '_sizes'] = null;
 		}
 
-		// Save color0 inventory.
-		if ( isset( $_POST['color' . $i . '_inventory'] ) ) {
+		// Save color-n inventory.
+		if ( isset( $_POST['color' . $i . '_inventory'] ) && '' !== $_POST['color' . $i . '_inventory']) {
 			$meta['color' . $i . '_inventory'] = $_POST['color' . $i . '_inventory'];
+		} else {
+			$meta['color' . $i . '_inventory'] = null;
 		}
 
-		// Save color0 image
-		if ( isset( $_POST['color' . $i . '_image'] ) ) {
+		// Save color-n image
+		if ( isset( $_POST['color' . $i . '_image'] ) && '' !== $_POST['color' . $i . '_image']) {
 			$meta['color' . $i . '_image'] = $_POST['color' . $i . '_image'];
+		} else {
+			$meta['color' . $i . '_image'] = null;
 		}
 	}
 
@@ -366,11 +455,12 @@ function render_bikini_price_meta_box( $post ) {
 	wp_nonce_field( basename( __FILE__ ), 'bikini_price' );
 	?>
 	
-	<span>$</span><input name="bikini_price_field" id="bikini_price_field" type="text" value=" <?php echo esc_html( $price ); ?> ">
+	<span>$</span><input name="bikini_price_field" id="bikini_price_field" type="text" value="<?php echo esc_html( $price ); ?>">
 
 	<?php
 }
 
+// -------- SAVE PRICE.
 function save_bikini_price_meta_box( $post_id ) {
 	global $post;
 	// Verify nonce.
@@ -390,7 +480,7 @@ function save_bikini_price_meta_box( $post_id ) {
 		return $post_id;
 	}
 
-	$meta['price'] = ( isset( $_POST['bikini_price_field'] ) && is_numeric( $_POST['bikini_price_field'] ) ) ? $_POST['bikini_price_field'] : 0;
+	$meta['price'] = ( isset( $_POST['bikini_price_field'] ) ) ? floatval( $_POST['bikini_price_field'] ) : 0;
 	$meta['uuid'] = wp_generate_uuid4();
 
 	foreach ( $meta as $key => $value ) {
