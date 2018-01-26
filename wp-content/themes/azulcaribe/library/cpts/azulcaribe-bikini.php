@@ -1,9 +1,15 @@
 <?php
+add_action( 'init', 'azulcaribe_bikini' );
+add_action( 'rest_api_init', 'azulcaribe_bikini_rest_api_init' );
+add_action( 'add_meta_boxes', 'bikini_meta_boxes' );
+add_action( 'save_post', 'save_bikini_price_meta_box', 10, 2 );
+add_action( 'save_post', 'save_bikini_color0_meta_box' );
+
 // ------- BIKINI POST TYPE -------
 function azulcaribe_bikini() {
 	$labels = array(
-		'name'          => __( 'Bikinis' ),
-		'singular_name' => __( 'Bikini' ),
+		'name'              => __( 'Bikinis' ),
+		'singular_name'     => __( 'Bikini' ),
 		'search_items'      => __( 'Buscar bikini', 'textdomain' ),
 		'all_items'         => __( 'Todos los bikinis', 'textdomain' ),
 		'parent_item'       => __( 'Parent product', 'textdomain' ),
@@ -36,11 +42,6 @@ function azulcaribe_bikini() {
 
 	register_post_type( 'bikini', $args );
 }
-add_action( 'init', 'azulcaribe_bikini' );
-add_action( 'rest_api_init', 'azulcaribe_bikini_rest_api_init' );
-add_action( 'add_meta_boxes', 'bikini_meta_boxes' );
-add_action( 'save_post', 'save_bikini_price_meta_box', 10, 2 );
-add_action( 'save_post', 'save_bikini_color0_meta_box' );
 
 function azulcaribe_bikini_rest_api_init() {
 	// route to get all bikinis
@@ -52,10 +53,19 @@ function azulcaribe_bikini_rest_api_init() {
 			'callback' => 'azulcaribe_rest_api_fetch_bikinis',
 		)
 	);
+	// route to fetch all pages.
+	register_rest_route(
+		'azulcaribe/v1',
+		'/bikinis/pages',
+		array(
+			'methods'  => 'GET',
+			'callback' => 'azulcaribe_rest_api_get_bikinis_pages',
+		)
+	);
 	// route to get a single bikini.
 	register_rest_route(
 		'azulcaribe/v1',
-		'/bikinis/single/(?P<uuid>[a-zA-Z0-9-]+)',
+		'/bikinis/(?P<uuid>[a-zA-Z0-9-]+)',
 		array(
 			'methods'  => 'GET',
 			'callback' => 'azulcaribe_rest_api_fetch_single_bikini',
@@ -66,51 +76,6 @@ function azulcaribe_bikini_rest_api_init() {
 			),
 		)
 	);
-	// route to fetch all pages.
-	register_rest_route(
-		'azulcaribe/v1',
-		'/bikinis/pages',
-		array(
-			'methods'  => 'GET',
-			'callback' => 'azulcaribe_rest_api_get_bikinis_pages',
-		)
-	);
-}
-
-function azulcaribe_rest_api_fetch_single_bikini ( $data ) {
-	$errors = null;
-	$post_to_return = null;
-	$args = array(
-		'post_type'  => 'bikini',
-		'meta_query' => array(
-			array(
-				'key'     => 'uuid',
-				'value'   => $data['uuid'],
-				'compare' => 'IN',
-			),
-		),
-	);
-	$query = new WP_Query( $args );
-
-	if ( $query->have_posts() ) {
-		$post_to_return_raw = $query->posts[0];
-		$tags = get_the_terms( $post_to_return_raw->ID, 'post_tag' );
-		$meta = get_post_meta( $post_to_return_raw->ID );
-		$post_to_return = array();
-		$post_to_return['tags'] = $tags;
-		$post_to_return['price'] = $meta['price'][0];
-		$post_to_return['sizes'] = $meta['sizes'][0];
-		$post_to_return['title'] = get_the_title( $post_to_return_raw->ID );
-		$post_to_return['description'] = get_the_excerpt( $post_to_return_raw->ID );
-		$post_to_return['thumbnail'] = get_the_post_thumbnail_url( $post_to_return_raw->ID );
-	} else {
-		$errors = 'Not found';
-	}
-
-	return [
-		'data' => $post_to_return,
-		'errors' => $errors,
-	];
 }
 
 function azulcaribe_rest_api_get_bikinis_pages ( WP_REST_Request $request ) {
@@ -142,6 +107,41 @@ function azulcaribe_rest_api_get_bikinis_pages ( WP_REST_Request $request ) {
 
 	return [
 		'data' => $data,
+		'errors' => $errors,
+	];
+}
+
+function azulcaribe_rest_api_fetch_single_bikini ( $data ) {
+	$errors = null;
+	$post_to_return = null;
+	$args = array(
+		'post_type'  => 'bikini',
+		'meta_query' => array(
+			array(
+				'key'     => 'uuid',
+				'value'   => $data['uuid'],
+				'compare' => 'IN',
+			),
+		),
+	);
+	$query = new WP_Query( $args );
+
+	if ( $query->have_posts() ) {
+		$post_to_return_raw = $query->posts[0];
+		$tags = get_the_terms( $post_to_return_raw->ID, 'post_tag' );
+		$meta = get_post_meta( $post_to_return_raw->ID );
+		$post_to_return = array();
+		$post_to_return['tags'] = $tags;
+		$post_to_return['price'] = $meta['price'][0];
+		$post_to_return['title'] = get_the_title( $post_to_return_raw->ID );
+		$post_to_return['description'] = get_the_excerpt( $post_to_return_raw->ID );
+		// $post_to_return['thumbnail'] = get_the_post_thumbnail_url( $post_to_return_raw->ID );
+	} else {
+		$errors = 'Not found';
+	}
+
+	return [
+		'data' => $post_to_return,
 		'errors' => $errors,
 	];
 }
@@ -481,7 +481,9 @@ function save_bikini_price_meta_box( $post_id ) {
 	}
 
 	$meta['price'] = ( isset( $_POST['bikini_price_field'] ) ) ? floatval( $_POST['bikini_price_field'] ) : 0;
-	$meta['uuid'] = wp_generate_uuid4();
+
+	$old_uuid = get_post_meta( $post_id )['uuid'];
+	if ( ! $old_uuid ) $meta['uuid'] = wp_generate_uuid4();
 
 	foreach ( $meta as $key => $value ) {
 		update_post_meta( $post->ID, $key, $value );
