@@ -135,7 +135,27 @@ function azulcaribe_rest_api_fetch_single_bikini ( $data ) {
 		$post_to_return['price'] = $meta['price'][0];
 		$post_to_return['title'] = get_the_title( $post_to_return_raw->ID );
 		$post_to_return['description'] = get_the_excerpt( $post_to_return_raw->ID );
-		// $post_to_return['thumbnail'] = get_the_post_thumbnail_url( $post_to_return_raw->ID );
+
+		// fetch colors
+		$colors_info = array();
+
+		// fetch colors info
+		for ( $i = 0; $i < 10; $i++ ) {
+			// check if color actually exists
+			if ( array_key_exists( 'color' . $i . '_name', $meta ) && null !== $meta['color' . $i . '_name'][0]) {
+				$tmp_color = array();
+				$tmp_color['name']      = $meta['color' . $i . '_name'][0];
+				$tmp_color['hexa']      = array_key_exists( 'color' . $i . '_hexa', $meta ) ? $meta['color' . $i . '_hexa'][0] : null;
+				$tmp_color['sizes']     = array_key_exists( 'color' . $i . '_sizes', $meta ) ? $meta['color' . $i . '_sizes'][0] : null;
+				$tmp_color['inventory'] = array_key_exists( 'color' . $i . '_inventory', $meta ) ? $meta['color' . $i . '_inventory'][0] : null;
+				$tmp_color['image']     = array_key_exists( 'color' . $i . '_image', $meta ) ? $meta['color' . $i . '_image'][0] : null;
+
+				// append to colors info array
+				$colors_info['color' . $i] = $tmp_color;
+			}
+		}
+
+		$post_to_return['colors'] = $colors_info;
 	} else {
 		$errors = 'Not found';
 	}
