@@ -178,24 +178,75 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 	$offset = 0;
 	$per_page = 10;
 	$sort_by = 'price';
-	$sort_order = 'DESC';
+	$sort_order = 'ASC';
 	$objects_to_return = array();
 	$errors = array();
+	$filter_tags = '';
+	$filter_price_range = '';
 
 	// parse query string params.
 	if ( $request->get_param( 'offset' ) ) $offset = intval( $request->get_param( 'offset' ));
 	if ( $request->get_param( 'per_page' ) ) $per_page = intval( $request->get_param( 'per_page' ) );
 	if ( $request->get_param( 'sort_by' ) ) $sort_by = $request->get_param( 'sort_by' );
 	if ( $request->get_param( 'sort_order' ) ) $sort_order = $request->get_param( 'sort_order' );
+	if ( $request->get_param( 'filter_tags' ) ) $filter_tags = $request->get_param( 'filter_tags' );
+	if ( $request->get_param( 'filter_price_range' ) ) $filter_price_range = $request->get_param('filter_price_range'); // format should be: [ x<>y | <x | >x ]
 
 	$query_args = array(
 		'post_type'      => 'bikini',
+		'orderby'        => 'meta_value_num',
 		'meta_key'       => $sort_by,
 		'order'          => $sort_order,
-		'order_by'       => 'meta_value_num',
 		'posts_per_page' => $per_page,
 		'offset'         => $offset,
 	);
+
+	// append tag filter if specified in the query str params.
+	if ( '' !== $filter_tags ) {
+		$query_args['tag'] = $filter_tags;
+	}
+
+	if ( '' !== $filter_price_range ) {
+		unset( $query_args['meta_key'] );
+		unset( $query_args['order'] );
+		unset( $query_args['orderby'] );
+		// determine which case it is
+		if ( strpos( $filter_price_range, '<>' ) ) { // means BETWEEN
+			$price0 = intval( explode( '<>', $filter_price_range )[0] );
+			$price1 = intval( explode( '<>', $filter_price_range )[1] );
+			$max = max($price0, $price1);
+			$min = min($price0, $price1);
+			$query_args['meta_query'] = array(
+				array(
+					'key'     => 'price',
+					'type'    => 'numeric',
+					'compare' => 'BETWEEN',
+					'value'   => array($min, $max),
+				)
+			);
+		} elseif ( strpos( $filter_price_range, '<' ) || strpos( $filter_price_range, '>' ) ) {
+			echo 'here';
+			if ( strpos(  $filter_price_range, '<' ) ) { // means LESS THAN
+				$price = intval( explode( '<', $filter_price_range )[1] );
+				$compare = '<=';
+			} else { // means GREATER THAN
+				$price = intval( explode( '>', $filter_price_range )[1] );
+				$compare = '>=';
+			}
+			$query_args['meta_query'] = array(
+				array(
+					'key'     => 'price',
+					'type'    => 'numeric',
+					'compare' => $compare,
+					'value'   => $price,
+				)
+			);
+		} else { // means invalid format
+			// do nothing
+		}
+	}
+
+	var_dump($query_args);
 
 	$query = new WP_Query( $query_args );
 
@@ -211,7 +262,7 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 			// fetch colors info
 			for ( $i = 0; $i < 10; $i++ ) {
 				// check if color actually exists
-				if ( array_key_exists( 'color' . $i . '_name', $meta ) ) {
+				if ( array_key_exists( 'color' . $i . '_name', $meta ) && null !== $meta['color' . $i . '_name'][0]) {
 					$tmp_color = array();
 					$tmp_color['color' . $i . '_name']      = $meta['color' . $i . '_name'][0];
 					$tmp_color['color' . $i . '_hexa']      = array_key_exists( 'color' . $i . '_hexa', $meta ) ? $meta['color' . $i . '_hexa'][0] : null;
@@ -242,87 +293,6 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 	];
 
 	return $response;
-}
-
-function azulcaribe_rest_api_fetch_bikinis_bak ( WP_REST_Request $request ) {
-	// execute query according to params.
-	// these are the only accepted params, everything else will be ignored.
-	$sort_by = $request->get_param( 'sort_by' );
-	$order = $request->get_param( 'order' );
-	$filter_by_key = $request->get_param( 'filter_by_key' );
-	$filter_by_val = $request->get_param( 'filter_by_val' );
-	$per_page = $request->get_param( 'per_page' );
-	$offset = $request->get_param( 'offset' );
-	$errors = array();
-	$objects_to_return = array();
-	$query_str_params = $request->get_params();
-
-	// validate query params.
-	if ( ! array_key_exists( 'offset', $query_str_params ) ) {
-		array_push( $errors, 'offset is a required query param' );
-	}
-	if ( ! array_key_exists( 'per_page', $query_str_params ) ) {
-		array_push( $errors, 'per_page is a required query param' );
-	}
-
-	if ( empty( $errors ) ) {
-		$query_args = array(
-			'post_type' => 'bikini',
-			'meta_key'  => $sort_by,
-			'order'     => $order,
-			'orderby'   => 'meta_value_num',
-			'posts_per_page' => $per_page,
-			'offset' => $offset,
-		);
-
-		$query = new WP_Query( $query_args );
-
-		if ( $query->have_posts() ) {
-			foreach ( $query->posts as $cur_post ) {
-				$tmp_obj_as_arr = array();
-				$meta = get_post_meta( $cur_post->ID );
-				$price = $meta['price'][0];
-				$sizes = $meta['sizes'][0];
-				$uuid = array_key_exists( 'uuid', $meta ) ?  $meta['uuid'][0] : '';
-				$title = get_the_title( $cur_post->ID );
-				$thumbnail = get_the_post_thumbnail_url( $cur_post->ID );
-
-				// check if bikini matches the filter criteria.
-				if ( $filter_by_key ) {
-					if ( 'sizes' === $filter_by_key ) {
-						$required_sizes_arr = explode( ',', $filter_by_val );
-						$actual_sizes_arr = explode( ',', $sizes );
-						foreach ( $required_sizes_arr as $size ) {
-							if ( in_array( $size, $actual_sizes_arr, true ) ) {
-								$tmp_obj_as_arr['title'] = $title;
-								$tmp_obj_as_arr['price'] = $price;
-								$tmp_obj_as_arr['sizes'] = $sizes;
-								$tmp_obj_as_arr['uuid'] = $uuid;
-
-								array_push( $objects_to_return, $tmp_obj_as_arr );
-							}
-						}
-					}
-				} else {
-					$tmp_obj_as_arr['title'] = $title;
-					$tmp_obj_as_arr['price'] = $price;
-					$tmp_obj_as_arr['sizes'] = $sizes;
-					$tmp_obj_as_arr['uuid'] = $uuid;
-					$tmp_obj_as_arr['thumbnail'] = $thumbnail;
-
-					array_push( $objects_to_return, $tmp_obj_as_arr );
-				}
-			}
-		} // End if().
-	} // End if().
-
-	$response = [
-		'data' => $objects_to_return,
-		'errors' => $errors,
-	];
-
-	return $response;
-
 }
 
 function azulcaribe_bikini_uuid_validation ( $param ) {
