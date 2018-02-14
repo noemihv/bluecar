@@ -1,4 +1,10 @@
 <?php
+define('RELATED_HIERARCHY', array(
+	'min_total'   => 10,
+	'bikini'     => 6,
+	// 'mantita' => 4,
+));
+
 add_action( 'init', 'azulcaribe_bikini' );
 add_action( 'rest_api_init', 'azulcaribe_bikini_rest_api_init' );
 add_action( 'add_meta_boxes', 'bikini_meta_boxes' );
@@ -69,6 +75,20 @@ function azulcaribe_bikini_rest_api_init() {
 		array(
 			'methods'  => 'GET',
 			'callback' => 'azulcaribe_rest_api_fetch_single_bikini',
+			'args' => array(
+				'uuid' => array(
+					'validate_callback' => 'azulcaribe_bikini_uuid_validation',
+				),
+			),
+		)
+	);
+	// route to get a single bikini's related content.
+	register_rest_route(
+		'azulcaribe/v1',
+		'/bikinis/(?P<uuid>[a-zA-Z0-9-]+)/related',
+		array(
+			'methods'  => 'GET',
+			'callback' => 'azulcaribe_rest_api_fetch_single_bikini_related',
 			'args' => array(
 				'uuid' => array(
 					'validate_callback' => 'azulcaribe_bikini_uuid_validation',
@@ -166,6 +186,43 @@ function azulcaribe_rest_api_fetch_single_bikini ( $data ) {
 	];
 }
 
+function azulcaribe_rest_api_fetch_single_bikini_related ( $data ) {
+	// get bikini object first
+	$bikini = azulcaribe_rest_api_fetch_single_bikini( $data );
+	$tags = '';
+
+	// check if bikini has tags.
+	if ( $bikini['tags'] ) {
+		foreach ( $bikini['tags'] as $tag ) {
+			if ( '' !== $tags ) $tags .= ',';
+			$tags .= $tag;
+		}
+	}
+
+	// start the loop to fetch related content based on the defined hierarchy
+	foreach( RELATED_HIERARCHY as $hierarchy ) {
+		$fetcher_object = null;
+
+		if ( 'min_total' !== $hierarchy ) {
+			// create fetcher obj
+			switch ($hierarchy) {
+				case 'bikini':
+					
+					break;
+				default:
+					
+					break;
+			}
+		}
+	}
+
+	return [
+		'bikini' => $bikini,
+		'data' => array(),
+		'errors' => array(),
+	];
+}
+
 /**
  * Fetch all bikinis according to req params.
  * If no req params are present, default to specific values 
@@ -183,6 +240,7 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 	$errors = array();
 	$filter_tags = '';
 	$filter_price_range = '';
+	$filter_exclude = '';
 
 	// parse query string params.
 	if ( $request->get_param( 'offset' ) ) $offset = intval( $request->get_param( 'offset' ));
@@ -191,6 +249,7 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 	if ( $request->get_param( 'sort_order' ) ) $sort_order = $request->get_param( 'sort_order' );
 	if ( $request->get_param( 'filter_tags' ) ) $filter_tags = $request->get_param( 'filter_tags' );
 	if ( $request->get_param( 'filter_price_range' ) ) $filter_price_range = $request->get_param('filter_price_range'); // format should be: [ x<>y | <x | >x ]
+	if ( $request->get_param( 'filter_exclude' ) ) $filter_exclude = $request->get_param('filter_exclude'); // exclude by uuid
 
 	$query_args = array(
 		'post_type'      => 'bikini',
@@ -206,24 +265,37 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 		$query_args['tag'] = $filter_tags;
 	}
 
+	if ( '' !== $filter_exclude ) {
+		$query_args['meta_query'] = array();
+		$filter_exclude_arr = explode(',', $filter_exclude);
+		foreach ($filter_exclude_arr as $exclude) {
+			$to_add = array(
+				'key'     => 'uuid',
+				'value'   => $filter_exclude,
+				'compare' => 'NOT IN',
+			);
+			array_push( $query_args['meta_query'], $to_add );
+		} 
+	}
+
 	if ( '' !== $filter_price_range ) {
-		unset( $query_args['meta_key'] );
-		unset( $query_args['order'] );
-		unset( $query_args['orderby'] );
 		// determine which case it is
 		if ( strpos( $filter_price_range, '<>' ) ) { // means BETWEEN
 			$price0 = intval( explode( '<>', $filter_price_range )[0] );
 			$price1 = intval( explode( '<>', $filter_price_range )[1] );
 			$max = max($price0, $price1);
 			$min = min($price0, $price1);
-			$query_args['meta_query'] = array(
-				array(
-					'key'     => 'price',
-					'type'    => 'numeric',
-					'compare' => 'BETWEEN',
-					'value'   => array($min, $max),
-				)
+			$to_add = array(
+				'key'     => 'price',
+				'type'    => 'numeric',
+				'compare' => 'BETWEEN',
+				'value'   => array($min, $max),
 			);
+
+			if (!$query_args['meta_query']) $query_args['meta_query'] = array();
+
+			array_push($query_args['meta_query'], $to_add);
+
 		} elseif ( strpos( $filter_price_range, '<' ) || strpos( $filter_price_range, '>' ) ) {
 			echo 'here';
 			if ( strpos(  $filter_price_range, '<' ) ) { // means LESS THAN
@@ -244,9 +316,9 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 		} else { // means invalid format
 			// do nothing
 		}
-	}
 
-	var_dump($query_args);
+	}
+	// var_dump($query_args);
 
 	$query = new WP_Query( $query_args );
 
@@ -255,6 +327,7 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 			$tmp_obj_as_arr = array();
 			$meta = get_post_meta( $cur_post->ID );
 			$price = floatval( $meta['price'][0] );
+			$tags = get_the_tags( $cur_post->ID );
 			$uuid = array_key_exists( 'uuid', $meta ) ?  $meta['uuid'][0] : '';
 			$title = get_the_title( $cur_post->ID );
 			$colors_info = array();
@@ -280,6 +353,7 @@ function azulcaribe_rest_api_fetch_bikinis (WP_REST_Request $request) {
 			$tmp_obj_as_arr['uuid']   = $uuid;
 			$tmp_obj_as_arr['title']  = $title;
 			$tmp_obj_as_arr['colors'] = $colors_info;
+			$tmp_obj_as_arr['tags'] = $tags;
 
 			// finally, append bikini obj to results
 			array_push( $objects_to_return, $tmp_obj_as_arr );
