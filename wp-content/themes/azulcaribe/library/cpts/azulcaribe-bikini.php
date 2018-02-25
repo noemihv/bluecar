@@ -1,12 +1,6 @@
 <?php
 include_once( get_template_directory() . '/library/helpers/BikiniFetcher.php' );
 
-define('RELATED_HIERARCHY', array(
-	'min_total'   => 10,
-	'bikini'     => 6,
-	// 'mantita' => 4,
-));
-
 add_action( 'init', 'azulcaribe_bikini' );
 add_action( 'rest_api_init', 'azulcaribe_bikini_rest_api_init' );
 add_action( 'add_meta_boxes', 'bikini_meta_boxes' );
