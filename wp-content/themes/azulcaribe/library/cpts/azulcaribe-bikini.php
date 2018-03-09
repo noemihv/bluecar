@@ -5,6 +5,7 @@ add_action( 'init', 'azulcaribe_bikini' );
 add_action( 'rest_api_init', 'azulcaribe_bikini_rest_api_init' );
 add_action( 'add_meta_boxes', 'bikini_meta_boxes' );
 add_action( 'save_post', 'save_bikini_price_meta_box', 10, 2 );
+add_action( 'save_post', 'save_bikini_type_meta_box', 10, 1 );
 add_action( 'save_post', 'save_bikini_color0_meta_box' );
 
 // ------- BIKINI POST TYPE -------
@@ -132,6 +133,16 @@ function bikini_meta_boxes() {
 		'bikini_price',
 		'Precio',
 		'render_bikini_price_meta_box' ,
+		'bikini',
+		'normal',
+		'low'
+	);
+
+	// type.
+	add_meta_box(
+		'bikini_type',
+		'Tipo',
+		'render_bikini_type_meta_box' ,
 		'bikini',
 		'normal',
 		'low'
@@ -301,6 +312,47 @@ function save_bikini_price_meta_box( $post_id ) {
 
 	$old_uuid = get_post_meta( $post_id )['uuid'];
 	if ( ! $old_uuid ) $meta['uuid'] = wp_generate_uuid4();
+
+	foreach ( $meta as $key => $value ) {
+		update_post_meta( $post->ID, $key, $value );
+	}
+}
+
+// -------- TYPE RELATED.
+function render_bikini_type_meta_box( $post ) {
+	$meta = get_post_custom( $post->ID );
+	$type = isset( $meta['type'][0] ) ? $meta['type'][0] : 'bikini';
+
+	wp_nonce_field( basename( __FILE__ ), 'bikini_type' );
+	?>
+
+	<input type="radio" name="bikini_type_rb" id="bikini_type_rb" value="bikini" <?php if ( $type === 'bikini' ) echo esc_html( 'checked' ); ?>> Bikini <br>
+  <input type="radio" name="bikini_type_rb" id="bikini_type_rb" value="trikini" <?php if ( $type === 'trikini' ) echo esc_html( 'checked' ); ?>> Trikini <br>
+  <input type="radio" name="bikini_type_rb" id="bikini_type_rb" value="onepiece" <?php if ( $type === 'onepiece' ) echo esc_html( 'checked' ); ?>> Una pieza
+	<?php
+}
+
+// --------- SAVE BIKINI TYPE.
+function save_bikini_type_meta_box( $post_id ) {
+	global $post;
+	// Verify nonce.
+	if ( ! isset( $_POST['bikini_type'] ) || ! wp_verify_nonce( $_POST['bikini_type'], basename( __FILE__ ) ) ) {
+		return $post_id;
+	}
+	// Check Autosave.
+	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || isset( $_REQUEST['bulk_edit'] ) ) {
+		return $post_id;
+	}
+	// Don't save if only a revision.
+	if ( isset( $post->post_type ) && 'revision' === $post->post_type ) {
+		return $post_id;
+	}
+	// Check permissions.
+	if ( ! current_user_can( 'edit_post', $post->ID ) ) {
+		return $post_id;
+	}
+
+	$meta['type'] = ( isset( $_POST['bikini_type_rb'] ) ) ? $_POST['bikini_type_rb'] : '';
 
 	foreach ( $meta as $key => $value ) {
 		update_post_meta( $post->ID, $key, $value );

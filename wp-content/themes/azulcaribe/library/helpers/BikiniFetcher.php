@@ -2,7 +2,7 @@
 class BikiniFetcher {
 	const RELATED_HIERARCHY = array(
 		'min_total'   => 10,
-		'bikini'     => 6,
+		'bikini'      => 6,
 		// 'mantita' => 4,
 	);
 
@@ -222,7 +222,7 @@ class BikiniFetcher {
 		if ( $bikini['tags'] ) {
 			foreach ( $bikini['tags'] as $tag ) {
 				if ( '' !== $tags ) $tags .= ',';
-				$tags .= $tag;
+				$tags .= $tag->slug;
 			}
 		}
 
@@ -232,20 +232,35 @@ class BikiniFetcher {
 				// create fetcher obj
 				switch ($postType) {
 					case 'bikini':
-						// echo 'will try to fetch bikini info, filter_tags: ' . $tags . 'per_page: ' . $amount;
+						$related_content['bikinis'] = Array();
 						$params = array(
 							'filter_tags'    => $tags,
 							'per_page'       => $amount,
 							'filter_exclude' => $filter_exclude,
 						);
 						$query_args = self::buildQueryArgs( $params );
-						// var_dump($query_args);
 						$bikinis = self::fetch( $query_args );
-						// var_dump($bikinis);
-						$related_content = array_merge( $related_content, $bikinis );
+						$related_content['bikinis'] = array_merge( $related_content['bikinis'], $bikinis );
+
+						// check if total amount did match the expected number for type
+						$fetched_amount = count( $bikinis );
+						if ( $fetched_amount < $amount ) {
+							// add excludes per ID to remaining objects.
+							foreach ($bikinis as $fetched_bikini) {
+								$filter_exclude .= ',' . $fetched_bikini['uuid'];
+							}
+							$params = array(
+								'per_page'       => $amount - $fetched_amount,
+								'filter_exclude' => $filter_exclude,
+							);
+
+							$query_args = self::buildQueryArgs( $params );
+							$remaining_bikinis = self::fetch( $query_args );
+							$related_content['bikinis'] = array_merge( $related_content['bikinis'], $remaining_bikinis );
+						}
+
 						break;
 					default:
-						
 						break;
 				}
 			}
